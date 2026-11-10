@@ -133,6 +133,10 @@ create index on public.profiles (role, status);
 create index on public.transporter_companies (owner_profile_id);
 create index on public.company_members (profile_id);
 create index on public.marketing_leads (status, created_at desc);
+create index on public.marketing_leads (assigned_to);
+create index on public.referral_codes (partner_profile_id);
+create index on public.referral_attributions (referral_code);
+create index on public.staff_accounts (created_by);
 create index on public.audit_logs (actor_id, created_at desc);
 create index on public.audit_logs (action, created_at desc);
 
@@ -149,24 +153,24 @@ create function public.is_staff() returns boolean
 language sql stable security definer set search_path = '' as $$
   select exists (
     select 1 from public.profiles p
-    where p.id = auth.uid() and p.status <> 'suspended'
+    where p.id = (select auth.uid()) and p.status <> 'suspended'
       and p.role in ('super_admin','ceo','operations_manager','verification_officer','finance_officer','marketing_officer','support_officer')
   )
 $$;
 
 create function public.has_role(roles public.user_role[]) returns boolean
 language sql stable security definer set search_path = '' as $$
-  select exists (select 1 from public.profiles p where p.id = auth.uid() and p.status <> 'suspended' and p.role = any(roles))
+  select exists (select 1 from public.profiles p where p.id = (select auth.uid()) and p.status <> 'suspended' and p.role = any(roles))
 $$;
 
 create function public.is_company_member(cid uuid) returns boolean
 language sql stable security definer set search_path = '' as $$
-  select exists (select 1 from public.company_members m where m.company_id = cid and m.profile_id = auth.uid())
+  select exists (select 1 from public.company_members m where m.company_id = cid and m.profile_id = (select auth.uid()))
 $$;
 
 create function public.is_company_admin(cid uuid) returns boolean
 language sql stable security definer set search_path = '' as $$
-  select exists (select 1 from public.company_members m where m.company_id = cid and m.profile_id = auth.uid()
+  select exists (select 1 from public.company_members m where m.company_id = cid and m.profile_id = (select auth.uid())
                  and m.member_role in ('owner','administrator'))
 $$;
 
@@ -266,38 +270,38 @@ alter table public.audit_logs enable row level security;
 grant select on public.profiles to authenticated;
 grant update (full_name, locale, marketing_consent) on public.profiles to authenticated;
 create policy profiles_select on public.profiles for select to authenticated
-  using (id = auth.uid() or public.is_staff());
+  using (id = (select auth.uid()) or public.is_staff());
 create policy profiles_update_own on public.profiles for update to authenticated
-  using (id = auth.uid()) with check (id = auth.uid());
+  using (id = (select auth.uid())) with check (id = (select auth.uid()));
 
 -- cargo owners
 grant select on public.cargo_owners to authenticated;
 grant update (business_name, country) on public.cargo_owners to authenticated;
 create policy cargo_owners_select on public.cargo_owners for select to authenticated
-  using (profile_id = auth.uid() or public.is_staff());
+  using (profile_id = (select auth.uid()) or public.is_staff());
 create policy cargo_owners_update_own on public.cargo_owners for update to authenticated
-  using (profile_id = auth.uid()) with check (profile_id = auth.uid());
+  using (profile_id = (select auth.uid())) with check (profile_id = (select auth.uid()));
 
 -- transporter companies: members read, owners/administrators edit profile fields (never verification).
 grant select on public.transporter_companies to authenticated;
 grant update (registered_name, trading_name, registration_number, country) on public.transporter_companies to authenticated;
 create policy companies_select on public.transporter_companies for select to authenticated
-  using (owner_profile_id = auth.uid() or public.is_company_member(id) or public.is_staff());
+  using (owner_profile_id = (select auth.uid()) or public.is_company_member(id) or public.is_staff());
 create policy companies_update on public.transporter_companies for update to authenticated
   using (public.is_company_admin(id)) with check (public.is_company_admin(id));
 
 grant select on public.company_members to authenticated;
 create policy members_select on public.company_members for select to authenticated
-  using (profile_id = auth.uid() or public.is_company_admin(company_id) or public.is_staff());
+  using (profile_id = (select auth.uid()) or public.is_company_admin(company_id) or public.is_staff());
 
 -- partners see their own codes and the referrals made with them
 grant select on public.referral_codes to authenticated;
 create policy referral_codes_select on public.referral_codes for select to authenticated
-  using (partner_profile_id = auth.uid() or public.is_staff());
+  using (partner_profile_id = (select auth.uid()) or public.is_staff());
 grant select on public.referral_attributions to authenticated;
 create policy referral_attr_select on public.referral_attributions for select to authenticated
   using (public.is_staff() or exists (
-    select 1 from public.referral_codes rc where rc.code = referral_code and rc.partner_profile_id = auth.uid()));
+    select 1 from public.referral_codes rc where rc.code = referral_code and rc.partner_profile_id = (select auth.uid())));
 
 -- leads: staff in commercial/support/admin roles only; inserts happen server-side with the service role.
 grant select, update on public.marketing_leads to authenticated;
@@ -315,4 +319,4 @@ create policy audit_select on public.audit_logs for select to authenticated
 -- staff accounts: a staff member sees their own record; only Super Admin lists all.
 grant select on public.staff_accounts to authenticated;
 create policy staff_select on public.staff_accounts for select to authenticated
-  using (profile_id = auth.uid() or public.has_role(array['super_admin']::public.user_role[]));
+  using (profile_id = (select auth.uid()) or public.has_role(array['super_admin']::public.user_role[]));

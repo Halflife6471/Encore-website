@@ -8,8 +8,8 @@ export const CONTACT = {
   /** Calls and WhatsApp share the same number. Digits only, with country code, for wa.me links. */
   whatsapp: (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "255744889900").replace(/[^\d]/g, ""),
   email: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "info@encoreholdings.africa",
-  instagram: "https://www.instagram.com/encoreholdings_group",
-  facebook: "https://www.facebook.com/encoreholdings_group",
+  instagram: "https://www.instagram.com/encoreholdings_group/",
+  facebook: "https://www.facebook.com/encoreholdingsgroup",
   handle: "@encoreholdings_group",
   address: { box: "P.O. Box 72757", city: "Dar es Salaam", country: "Tanzania" },
 };

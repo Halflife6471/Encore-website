@@ -2,7 +2,8 @@ import { PGlite } from "@electric-sql/pglite";
 import { readFileSync } from "node:fs";
 import { beforeAll, describe, expect, it } from "vitest";
 
-const sql = readFileSync(new URL("../supabase/migrations/20261110000000_public_site_foundation.sql", import.meta.url), "utf8");
+const migrations = ["20261110000000_public_site_foundation.sql", "20261110000100_move_rls_helpers_to_private_schema.sql"];
+const sql = migrations.map((f) => readFileSync(new URL(`../supabase/migrations/${f}`, import.meta.url), "utf8")).join("\n");
 let db: PGlite;
 
 async function signup(email: string, meta: Record<string, unknown>, confirmed = false) {

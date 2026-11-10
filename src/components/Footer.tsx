@@ -60,7 +60,7 @@ export function Footer({ locale, d }: { locale: Locale; d: Dict }) {
             </ul>
             <div className="mt-4 flex gap-2">
               <a href={CONTACT.instagram} target="_blank" rel="noopener noreferrer" aria-label={`Instagram ${CONTACT.handle}`} className="grid h-10 w-10 place-items-center rounded-full border border-g3 text-g1 transition hover:border-gold hover:text-gold"><IconInstagram className="h-5 w-5" /></a>
-              <a href={CONTACT.facebook} target="_blank" rel="noopener noreferrer" aria-label={`Facebook ${CONTACT.handle}`} className="grid h-10 w-10 place-items-center rounded-full border border-g3 text-g1 transition hover:border-gold hover:text-gold"><IconFacebook className="h-5 w-5" /></a>
+              <a href={CONTACT.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook Encore Holdings Group" className="grid h-10 w-10 place-items-center rounded-full border border-g3 text-g1 transition hover:border-gold hover:text-gold"><IconFacebook className="h-5 w-5" /></a>
             </div>
           </div>
           {cols.map((c) => (

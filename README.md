@@ -33,8 +33,11 @@ Without Supabase variables the public pages work; sign-in, sign-up and forms sho
 
 ## Supabase setup (Encore-owned project)
 
+Project **Encore-website** (organization *Encore Holdings*, region eu-central-1) is already created and both migrations are applied.
+For a new environment:
+
 1. Create a project under Encore's own Supabase account (SRS §39.3).
-2. Apply `supabase/migrations/20261110000000_public_site_foundation.sql` (SQL editor or `supabase db push`).
+2. Apply the files in `supabase/migrations/` in order (SQL editor or `supabase db push`).
 3. Auth → URL configuration: Site URL = `NEXT_PUBLIC_SITE_URL`; add `…/auth/callback` to redirect URLs. Keep **Confirm email** enabled.
 4. Set `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` and the server-only `SUPABASE_SERVICE_ROLE_KEY` (never expose it to the browser).
 5. Create the first Super Admin manually (Auth user + `profiles.role = 'super_admin'` + `staff_accounts` row); staff accounts are never self-registered (SRS §5.2).

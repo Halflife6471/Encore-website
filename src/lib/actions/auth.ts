@@ -84,7 +84,11 @@ export async function registerAction(_prev: ActionState, fd: FormData): Promise<
     const code = (error as { code?: string }).code;
     if (code === "weak_password") return { fieldErrors: { password: "password_weak" }, values };
     if (code === "user_already_exists" || code === "email_exists" || code === "phone_exists") return { error: "exists", values };
+    if (code === "email_address_invalid") return { fieldErrors: { email: "email_invalid" }, values };
     if (code === "over_email_send_rate_limit" || code === "over_request_rate_limit") return { error: "locked", values };
+    // e.g. the project still uses Supabase's built-in mailer, which only delivers to team members.
+    if (code === "email_address_not_authorized" || code === "email_provider_disabled" || code === "signup_disabled") return { error: "unavailable", values };
+    console.error("[register] signUp failed", { status: (error as { status?: number }).status, code });
     return { error: "generic", values };
   }
   // Supabase returns success for already-registered emails (no enumeration): we do the same.
