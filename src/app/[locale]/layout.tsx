@@ -24,6 +24,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     title: { default: `${d.meta.siteName} — ${d.meta.tagline}`, template: `%s | ${d.meta.siteName}` },
     description: d.meta.description,
     icons: { icon: "/brand/encore-mark.png", apple: "/apple-touch-icon.png" },
+    openGraph: { images: [{ url: "/og.png", width: 1200, height: 630 }] },
+    twitter: { card: "summary_large_image", images: ["/og.png"] },
   };
 }
 
