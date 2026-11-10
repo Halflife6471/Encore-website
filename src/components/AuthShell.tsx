@@ -19,17 +19,17 @@ export function AuthShell({
   const gold = variant === "login" ? s.loginGold : s.registerGold;
   const dark = variant === "login" ? s.loginDark : s.registerDark;
   return (
-    <div className="min-h-[calc(100vh-84px)] bg-white">
+    <div className="min-h-[calc(100vh-84px)] bg-surface">
       <div className="h-1.5 bg-gold lg:hidden" />
       <div className="mx-auto grid max-w-[1400px] gap-8 px-4 py-8 sm:px-8 lg:grid-cols-[minmax(0,600px)_1fr] lg:gap-14 lg:px-10 lg:py-10">
         <div className="flex flex-col">
           {children}
         </div>
 
-        <aside aria-hidden className="relative hidden min-h-[640px] overflow-hidden rounded-[44px] bg-gradient-to-br from-tint via-[#e6e7e8] to-g1 lg:block">
+        <aside aria-hidden className="relative hidden min-h-[640px] overflow-hidden rounded-[44px] border border-line lg:block" style={{ background: "linear-gradient(135deg, var(--scene-a), var(--scene-b) 55%, var(--scene-c))" }}>
           <Scene />
           <div className="absolute left-[11%] right-[12%] top-[9%] z-20 rounded-[22px] bg-gold p-5 shadow-lift">
-            <span className="absolute right-5 top-5 h-2.5 w-2.5 rounded-full bg-char" />
+            <span className="absolute right-5 top-5 h-2.5 w-2.5 rounded-full bg-ink" />
             <p className="text-lg font-semibold">{gold.t}</p>
             <p className="mt-1 text-[15px] leading-snug">{gold.d}</p>
           </div>
@@ -37,24 +37,24 @@ export function AuthShell({
             <span className="absolute right-5 top-5 h-2.5 w-2.5 rounded-full bg-gold" />
             {dark}
           </div>
-          <div className="absolute inset-x-[10%] bottom-[7%] z-20 rounded-[22px] border border-white/70 bg-white/55 p-5 shadow-lift backdrop-blur-xl">
+          <div className="absolute inset-x-[10%] bottom-[7%] z-20 rounded-[22px] border border-white/70 bg-surface/55 p-5 shadow-lift backdrop-blur-xl">
             {variant === "login" ? (
               <>
                 <div className="flex items-center justify-between font-semibold"><span className="text-lg">{s.quick}</span><span className="text-[13px] font-medium">{s.secure}</span></div>
                 {[IconMail, IconLock].map((Ic, i) => (
                   <div key={i} className="mt-3.5 flex items-center gap-3">
-                    <span className="grid h-9 w-9 place-items-center rounded-full bg-white/70"><Ic className="h-4 w-4" /></span>
-                    <span className="h-2 flex-1 rounded-full bg-char/15" />
+                    <span className="grid h-9 w-9 place-items-center rounded-full bg-surface/70"><Ic className="h-4 w-4" /></span>
+                    <span className="h-2 flex-1 rounded-full bg-ink/15" />
                   </div>
                 ))}
-                <div className="mt-4 h-10 rounded-xl bg-char/20" />
+                <div className="mt-4 h-10 rounded-xl bg-ink/20" />
               </>
             ) : (
               <>
                 <div className="flex items-center justify-between font-semibold"><span className="text-lg">{d.auth.register.onboardingTitle}</span><span className="text-[13px] font-medium">{s.stepsCount}</span></div>
                 <ol className="mt-3 space-y-2 text-[15px]">
                   {d.auth.register.steps.map((t, i) => (
-                    <li key={t} className="flex items-center gap-3"><span className="grid h-6 w-6 place-items-center rounded-full bg-char text-xs font-bold text-gold">{i + 1}</span>{t}</li>
+                    <li key={t} className="flex items-center gap-3"><span className="grid h-6 w-6 place-items-center rounded-full bg-ink text-xs font-bold text-gold">{i + 1}</span>{t}</li>
                   ))}
                 </ol>
               </>
@@ -70,8 +70,8 @@ export function AuthShell({
 function Scene() {
   return (
     <svg viewBox="0 0 536 780" preserveAspectRatio="xMidYMid slice" className="absolute inset-0 h-full w-full">
-      <g fill="#fff" opacity=".55"><rect x="30" y="300" width="90" height="190" rx="10" /><rect x="130" y="340" width="70" height="150" rx="10" /><rect x="380" y="270" width="110" height="220" rx="10" /><rect x="300" y="330" width="70" height="160" rx="10" /></g>
-      <g fill="#fff" opacity=".8"><rect x="45" y="330" width="14" height="14" rx="3" /><rect x="70" y="330" width="14" height="14" rx="3" /><rect x="45" y="360" width="14" height="14" rx="3" /><rect x="70" y="360" width="14" height="14" rx="3" /><rect x="400" y="300" width="16" height="16" rx="3" /><rect x="430" y="300" width="16" height="16" rx="3" /><rect x="400" y="334" width="16" height="16" rx="3" /><rect x="430" y="334" width="16" height="16" rx="3" /></g>
+      <g className="fill-surface" opacity=".7"><rect x="30" y="300" width="90" height="190" rx="10" /><rect x="130" y="340" width="70" height="150" rx="10" /><rect x="380" y="270" width="110" height="220" rx="10" /><rect x="300" y="330" width="70" height="160" rx="10" /></g>
+      <g className="fill-surface dark:fill-gold" opacity=".85"><rect x="45" y="330" width="14" height="14" rx="3" /><rect x="70" y="330" width="14" height="14" rx="3" /><rect x="45" y="360" width="14" height="14" rx="3" /><rect x="70" y="360" width="14" height="14" rx="3" /><rect x="400" y="300" width="16" height="16" rx="3" /><rect x="430" y="300" width="16" height="16" rx="3" /><rect x="400" y="334" width="16" height="16" rx="3" /><rect x="430" y="334" width="16" height="16" rx="3" /></g>
       <polygon points="0,500 536,400 536,650 0,750" fill="#3D4348" />
       <polygon points="0,500 536,400 536,412 0,512" fill="#FFBC0D" />
       <line x1="0" y1="628" x2="536" y2="526" stroke="#fff" strokeWidth="5" strokeDasharray="46 34" opacity=".9" />

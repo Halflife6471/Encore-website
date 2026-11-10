@@ -29,7 +29,7 @@ export default async function Track({ params }: P) {
       <PageHero title={t.title} lead={t.lead} />
       <Section>
         <div className="card max-w-2xl">
-          <p className="text-lg text-g3">{signedIn ? t.signedIn : t.signedOut}</p>
+          <p className="text-lg text-muted">{signedIn ? t.signedIn : t.signedOut}</p>
           {!signedIn && <div className="mt-6"><LinkButton href={href(locale, "login")} arrow>{d.nav.login}</LinkButton></div>}
         </div>
       </Section>

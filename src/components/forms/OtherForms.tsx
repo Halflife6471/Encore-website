@@ -17,10 +17,10 @@ export function ForgotForm({ locale, d }: { locale: Locale; d: Dict }) {
   const errs = d.auth.errors as unknown as Record<string, string>;
   if (state.ok) {
     return (
-      <div role="status" className="rounded-3xl border border-g1 p-8 shadow-soft">
+      <div role="status" className="rounded-3xl border border-line p-8 shadow-soft">
         <span className="grid h-14 w-14 place-items-center rounded-full bg-gold"><IconMail className="h-7 w-7" /></span>
         <h1 className="mt-5 text-3xl font-semibold">{t.sentTitle}</h1>
-        <p className="mt-3 text-g3">{t.sentText}</p>
+        <p className="mt-3 text-muted">{t.sentText}</p>
         <Link href={href(locale, "login")} className="btn btn-outline btn-sm mt-6">{d.auth.register.signIn}</Link>
       </div>
     );
@@ -28,7 +28,7 @@ export function ForgotForm({ locale, d }: { locale: Locale; d: Dict }) {
   return (
     <div>
       <h1 className="text-center text-4xl font-semibold tracking-tight">{t.title}</h1>
-      <p className="mt-2 text-center text-[17px] font-light text-g3">{t.subtitle}</p>
+      <p className="mt-2 text-center text-[17px] font-light text-muted">{t.subtitle}</p>
       <form action={action} className="mt-6 space-y-4" noValidate>
         <input type="hidden" name="locale" value={locale} />
         {state.error && <FormBanner message={errText(errs, state.error)} />}
@@ -49,7 +49,7 @@ export function NewPasswordForm({ locale, d, first }: { locale: Locale; d: Dict;
   return (
     <div>
       <h1 className="text-center text-4xl font-semibold tracking-tight">{t.newTitle}</h1>
-      {first && <p className="mt-2 text-center text-[15px] text-g3">{d.auth.staff.subtitle}</p>}
+      {first && <p className="mt-2 text-center text-[15px] text-muted">{d.auth.staff.subtitle}</p>}
       <form action={action} className="mt-6 space-y-4" noValidate>
         <input type="hidden" name="locale" value={locale} />
         {state.error && <FormBanner message={errText(errs, state.error)} />}
@@ -70,7 +70,7 @@ export function StaffLoginForm({ locale, d }: { locale: Locale; d: Dict }) {
   return (
     <div>
       <h1 className="text-center text-4xl font-semibold tracking-tight">{t.title}</h1>
-      <p className="mt-2 text-center text-[17px] font-light text-g3">{t.subtitle}</p>
+      <p className="mt-2 text-center text-[17px] font-light text-muted">{t.subtitle}</p>
       <form action={action} className="relative mt-6 space-y-4" noValidate>
         <input type="hidden" name="locale" value={locale} />
         <Honeypot />
@@ -79,7 +79,7 @@ export function StaffLoginForm({ locale, d }: { locale: Locale; d: Dict }) {
         <PasswordField label={d.auth.login.password} icon={<IconLock />} error={errText(errs, fe.password)} />
         <SubmitButton pending={pending} pendingText={d.auth.login.submitting}>{t.submit}</SubmitButton>
       </form>
-      <p className="mt-5 text-center text-[13.5px] text-g3">{t.note}</p>
+      <p className="mt-5 text-center text-[13.5px] text-muted">{t.note}</p>
       <p className="mt-3 text-center"><Link href={href(locale, "login")} className="font-semibold underline decoration-gold decoration-2 underline-offset-4">{t.back}</Link></p>
     </div>
   );
@@ -111,10 +111,10 @@ export function LeadForm({
 
   if (state.ok) {
     return (
-      <div role="status" className="rounded-3xl border border-g1 bg-white p-8 shadow-soft">
+      <div role="status" className="rounded-3xl border border-line bg-surface p-8 shadow-soft">
         <span className="grid h-12 w-12 place-items-center rounded-full bg-gold text-2xl">✓</span>
         <h3 className="mt-4 text-2xl font-bold">{f.successTitle}</h3>
-        <p className="mt-2 text-g3">{f.successText} <strong className="text-char">{state.reference}</strong>. {f.successFollow}</p>
+        <p className="mt-2 text-muted">{f.successText} <strong className="text-fg">{state.reference}</strong>. {f.successFollow}</p>
       </div>
     );
   }
@@ -153,13 +153,13 @@ export function LeadForm({
         <textarea id={`${idPrefix}-msg`} name="message" rows={5} defaultValue={v.message} aria-invalid={!!fe.message} className="input h-auto py-3" />
         {fe.message && <p role="alert" className="mt-1.5 text-[13px] font-medium text-danger">{errText(errs, fe.message)}</p>}
       </div>
-      <label className="flex cursor-pointer items-start gap-3 text-[13.5px] leading-snug text-g3">
-        <input type="checkbox" name="consent" defaultChecked={v.consent === "on"} className="mt-0.5 h-5 w-5 flex-none rounded-md border-g2 accent-char" aria-invalid={!!fe.consent} />
+      <label className="flex cursor-pointer items-start gap-3 text-[13.5px] leading-snug text-muted">
+        <input type="checkbox" name="consent" defaultChecked={v.consent === "on"} className="mt-0.5 h-5 w-5 flex-none rounded-md border-g2 accent-gold" aria-invalid={!!fe.consent} />
         <span>{f.consent}</span>
       </label>
       {fe.consent && <p role="alert" className="text-[13px] font-medium text-danger">{errText(errs, fe.consent)}</p>}
-      <label className="flex cursor-pointer items-start gap-3 text-[13.5px] leading-snug text-g3">
-        <input type="checkbox" name="updates" defaultChecked={v.updates === "on"} className="mt-0.5 h-5 w-5 flex-none rounded-md border-g2 accent-char" />
+      <label className="flex cursor-pointer items-start gap-3 text-[13.5px] leading-snug text-muted">
+        <input type="checkbox" name="updates" defaultChecked={v.updates === "on"} className="mt-0.5 h-5 w-5 flex-none rounded-md border-g2 accent-gold" />
         <span>{f.updates}</span>
       </label>
       <SubmitButton pending={pending} pendingText={f.sending}>{f.submit}</SubmitButton>

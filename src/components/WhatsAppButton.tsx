@@ -16,7 +16,7 @@ export function WhatsAppButton({ locale, label }: { locale: Locale; label: strin
       target="_blank"
       rel="noopener noreferrer"
       aria-label={label}
-      className="fixed bottom-5 right-5 z-40 grid h-14 w-14 place-items-center rounded-full bg-gold text-char shadow-lift transition hover:scale-105"
+      className="fixed bottom-5 right-5 z-40 grid h-14 w-14 place-items-center rounded-full bg-gold text-ongold shadow-lift transition hover:scale-105"
     >
       <IconChat className="h-7 w-7" />
     </a>

@@ -27,7 +27,7 @@ export default async function UpdatePassword({ params, searchParams }: P) {
       {user ? (
         <NewPasswordForm locale={locale} d={d} first={sp.first === "1"} />
       ) : (
-        <p role="alert" className="rounded-2xl bg-goldtint p-5 text-lg">{d.auth.reset.needLink}</p>
+        <p role="alert" className="rounded-2xl bg-goldsoft p-5 text-lg">{d.auth.reset.needLink}</p>
       )}
     </AuthShell>
   );

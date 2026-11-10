@@ -2,7 +2,7 @@ import { PGlite } from "@electric-sql/pglite";
 import { readFileSync } from "node:fs";
 import { beforeAll, describe, expect, it } from "vitest";
 
-const migrations = ["20261110000000_public_site_foundation.sql", "20261110000100_move_rls_helpers_to_private_schema.sql"];
+const migrations = ["20261110000000_public_site_foundation.sql", "20261110000100_move_rls_helpers_to_private_schema.sql", "20261110000200_staff_clear_must_change_password.sql"];
 const sql = migrations.map((f) => readFileSync(new URL(`../supabase/migrations/${f}`, import.meta.url), "utf8")).join("\n");
 let db: PGlite;
 
@@ -135,3 +135,21 @@ describe("row-level security – SRS §30.2", () => {
     expect(r.reference).toMatch(/^ENC-L-\d{4}-\d{5}$/);
   });
 });
+
+describe("staff first-login password rule – SRS §5.2", () => {
+  it("lets staff clear only their own must-change flag, nothing else", async () => {
+    const s1 = await signup("staff1@example.com", { full_name: "Staff One", account_type: "cargo_owner" });
+    const s2 = await signup("staff2@example.com", { full_name: "Staff Two", account_type: "cargo_owner" });
+    for (const [id, u] of [[s1, "staff.one"], [s2, "staff.two"]] as const) {
+      await db.query("update public.profiles set role='operations_manager', status='active' where id=$1", [id]);
+      await db.query("insert into public.staff_accounts (profile_id, username) values ($1,$2)", [id, u]);
+    }
+    await expect(asUser(s1, () => db.query("update public.staff_accounts set active=false where profile_id=$1", [s1]))).rejects.toThrow(/permission denied/);
+    await asUser(s1, () => db.query("update public.staff_accounts set must_change_password=false where profile_id=$1", [s1]));
+    expect((await db.query<any>("select must_change_password m from public.staff_accounts where profile_id=$1", [s1])).rows[0].m).toBe(false);
+    await asUser(s1, () => db.query("update public.staff_accounts set must_change_password=false where profile_id=$1", [s2]));
+    expect((await db.query<any>("select must_change_password m from public.staff_accounts where profile_id=$1", [s2])).rows[0].m).toBe(true); // other staff untouched (RLS hides the row)
+    await expect(asUser(s1, () => db.query("update public.staff_accounts set must_change_password=true where profile_id=$1", [s1]))).rejects.toThrow(/row-level security/);
+  });
+});
+

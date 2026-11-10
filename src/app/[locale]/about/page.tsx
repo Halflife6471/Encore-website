@@ -26,9 +26,9 @@ export default async function About({ params }: P) {
           <InfoCard title={a.vision.t} dark>{a.vision.d}</InfoCard>
           <InfoCard title={a.mission.t}>{a.mission.d}</InfoCard>
         </div>
-        <div className="mt-6 rounded-3xl border border-[#FFE08A] bg-goldtint p-8">
+        <div className="mt-6 rounded-3xl border border-goldline bg-goldsoft p-8">
           <h2 className="text-2xl font-bold">{a.principle.t}</h2>
-          <p className="mt-3 max-w-4xl leading-relaxed text-g3">{a.principle.d}</p>
+          <p className="mt-3 max-w-4xl leading-relaxed text-muted">{a.principle.d}</p>
         </div>
       </Section>
       <Section tint>
@@ -40,7 +40,7 @@ export default async function About({ params }: P) {
       </Section>
       <Section>
         <SectionHead title={a.whereTitle} lead={a.where} />
-        <p className="text-sm text-g3">{a.note}</p>
+        <p className="text-sm text-muted">{a.note}</p>
       </Section>
       <FinalCta locale={locale} d={d} />
     </>

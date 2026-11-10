@@ -27,11 +27,11 @@ export function CookieBanner({ locale, d }: { locale: Locale; d: Dict["cookie"] 
   };
   if (!show) return null;
   return (
-    <div role="dialog" aria-label={d.title} className="fixed inset-x-3 bottom-3 z-50 max-w-md rounded-3xl border border-g1 bg-white p-5 shadow-lift sm:left-5 sm:right-auto">
+    <div role="dialog" aria-label={d.title} className="fixed inset-x-3 bottom-3 z-50 max-w-md rounded-3xl border border-line bg-surface p-5 shadow-lift sm:left-5 sm:right-auto">
       <p className="font-bold">{d.title}</p>
-      <p className="mt-1 text-sm leading-relaxed text-g3">
+      <p className="mt-1 text-sm leading-relaxed text-muted">
         {d.text}{" "}
-        <Link href={href(locale, "privacy")} className="font-semibold text-char underline decoration-gold decoration-2 underline-offset-2">{d.policy}</Link>
+        <Link href={href(locale, "privacy")} className="font-semibold text-fg underline decoration-gold decoration-2 underline-offset-2">{d.policy}</Link>
       </p>
       <div className="mt-4 flex flex-wrap gap-2">
         <button type="button" onClick={() => choose("essential")} className="btn btn-outline btn-sm">{d.essential}</button>

@@ -244,11 +244,9 @@ export async function newPasswordAction(_prev: ActionState, fd: FormData): Promi
   if (error) {
     return { error: (error as { code?: string }).code === "weak_password" ? "password_weak" : "generic" };
   }
-  if (adminConfigured()) {
-    const admin = createAdminClient();
-    await admin.from("staff_accounts").update({ must_change_password: false }).eq("profile_id", u.user.id);
-    await audit("password_changed", { actorId: u.user.id });
-  }
+  // Clears the first-login flag through the user's own session (RLS only lets staff clear their own flag).
+  await supabase.from("staff_accounts").update({ must_change_password: false }).eq("profile_id", u.user.id);
+  if (adminConfigured()) await audit("password_changed", { actorId: u.user.id });
   redirect(href(parsed.data.locale, "app"));
 }
 

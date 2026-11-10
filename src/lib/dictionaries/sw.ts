@@ -26,6 +26,8 @@ export const sw: Dict = {
     close: "Funga",
     skip: "Ruka hadi maudhui",
     language: "Lugha",
+    themeDark: "Washa hali ya giza",
+    themeLight: "Washa hali ya mwanga",
   },
   common: {
     learnMore: "Jifunze zaidi",

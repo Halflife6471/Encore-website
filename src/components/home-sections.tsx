@@ -8,21 +8,21 @@ import { IconArrow, IconBox, IconLink, IconStar, IconTruck, IconWheel, LinkButto
 export function Hero({ locale, d }: { locale: Locale; d: Dict }) {
   const h = d.home.hero;
   return (
-    <section className="relative overflow-hidden border-b border-g1 bg-white">
+    <section className="relative overflow-hidden border-b border-line bg-surface">
       <div aria-hidden className="pointer-events-none absolute -left-32 top-1/3 h-[26rem] w-[40rem] rounded-full bg-gold/30 blur-3xl" />
       <div aria-hidden className="pointer-events-none absolute left-1/3 top-1/2 h-[26rem] w-[40rem] rounded-full bg-g2/25 blur-3xl" />
-      <div aria-hidden className="pointer-events-none absolute -right-40 -top-24 hidden h-[44rem] w-[44rem] rounded-full border border-g1 lg:block" />
-      <div aria-hidden className="pointer-events-none absolute -right-4 top-16 hidden h-[30rem] w-[30rem] rounded-full border border-g1 lg:block" />
+      <div aria-hidden className="pointer-events-none absolute -right-40 -top-24 hidden h-[44rem] w-[44rem] rounded-full border border-line lg:block" />
+      <div aria-hidden className="pointer-events-none absolute -right-4 top-16 hidden h-[30rem] w-[30rem] rounded-full border border-line lg:block" />
       <div aria-hidden className="pointer-events-none absolute bottom-0 right-16 top-0 hidden border-l border-dashed border-g2 lg:block" />
 
       <div className="container-x relative grid gap-10 pb-16 pt-12 sm:pt-16 lg:grid-cols-[1.25fr_1fr] lg:items-start lg:gap-8 lg:pb-24 lg:pt-20">
         <h1 className="text-[clamp(2.7rem,7.4vw,6rem)] font-extrabold leading-[0.97] tracking-[-0.025em]">
           <span className="block">{h.a}</span>
           <span className="block">{h.b}</span>
-          <span className="block font-bold italic">{h.c}</span>
+          <span className="block font-bold italic"><span className="bg-[linear-gradient(transparent_60%,var(--color-gold)_60%,var(--color-gold)_92%,transparent_92%)] px-1 dark:bg-none dark:text-gold">{h.c}</span></span>
         </h1>
         <div className="lg:pr-20 lg:pt-4">
-          <p className="max-w-lg text-lg font-light leading-relaxed text-g3 sm:text-xl">{h.lead}</p>
+          <p className="max-w-lg text-lg font-light leading-relaxed text-muted sm:text-xl">{h.lead}</p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <IconStar className="hidden h-9 w-9 sm:block" />
             <LinkButton href={href(locale, "register")} arrow>{h.primary}</LinkButton>
@@ -31,7 +31,7 @@ export function Hero({ locale, d }: { locale: Locale; d: Dict }) {
         </div>
         <ol className="flex flex-wrap gap-3 lg:col-span-2 lg:mt-4" aria-label="Verify, Match, Deliver, Repeat">
           {d.home.cycle.map((c, i) => (
-            <li key={c} className="flex items-center gap-2.5 rounded-full border border-g1 bg-white/80 py-2 pl-2 pr-5 text-[15px] font-semibold backdrop-blur">
+            <li key={c} className="flex items-center gap-2.5 rounded-full border border-line bg-surface/80 py-2 pl-2 pr-5 text-[15px] font-semibold backdrop-blur">
               <span className="grid h-7 w-7 place-items-center rounded-full bg-gold text-xs font-extrabold">{i + 1}</span>
               {c}
             </li>
@@ -58,9 +58,9 @@ export function Audiences({ locale, d }: { locale: Locale; d: Dict }) {
           const m = meta[it.key];
           return (
             <Link key={it.key} href={href(locale, m.to)} className="card group flex flex-col transition hover:-translate-y-1 hover:shadow-lift">
-              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-goldtint transition group-hover:bg-gold"><m.icon className="h-6 w-6" /></span>
+              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-goldsoft transition group-hover:bg-gold group-hover:text-ongold"><m.icon className="h-6 w-6" /></span>
               <h3 className="mt-5 text-xl font-bold">{it.t}</h3>
-              <p className="mt-2 flex-1 leading-relaxed text-g3">{it.d}</p>
+              <p className="mt-2 flex-1 leading-relaxed text-muted">{it.d}</p>
               <span className="mt-5 inline-flex items-center gap-2 font-semibold">{it.cta}<IconArrow className="h-[18px] w-[18px] transition group-hover:translate-x-1" /></span>
             </Link>
           );
@@ -79,9 +79,9 @@ export function Lifecycle({ locale, d, link = true }: { locale: Locale; d: Dict;
         <span aria-hidden className="absolute left-0 right-0 top-6 hidden border-t-[3px] border-dotted border-g2 lg:block" />
         {l.steps.map((s, i) => (
           <li key={s.t} className="relative">
-            <span className={`relative grid h-12 w-12 place-items-center rounded-full text-base font-extrabold ${i === 0 || i === l.steps.length - 1 ? "bg-char text-gold" : "bg-gold text-char"}`}>{i + 1}</span>
+            <span className={`relative grid h-12 w-12 place-items-center rounded-full text-base font-extrabold ${i === 0 || i === l.steps.length - 1 ? "bg-ink text-gold" : "bg-gold text-ongold"}`}>{i + 1}</span>
             <h3 className="mt-4 text-lg font-bold uppercase tracking-wide">{s.t}</h3>
-            <p className="mt-1.5 text-[15px] leading-relaxed text-g3">{s.d}</p>
+            <p className="mt-1.5 text-[15px] leading-relaxed text-muted">{s.d}</p>
           </li>
         ))}
       </ol>
@@ -125,7 +125,7 @@ export function CorridorsTeaser({ locale, d }: { locale: Locale; d: Dict }) {
 
 export function VerificationExplainer({ d }: { d: Dict }) {
   const v = d.home.verification;
-  const tones = ["bg-g1 text-char", "bg-gold text-char", "bg-char text-white"];
+  const tones = ["bg-line text-fg", "bg-gold text-ongold", "bg-fg text-page"];
   return (
     <Section tint>
       <SectionHead eyebrow={v.eyebrow} title={v.title} lead={v.text} />
@@ -133,7 +133,7 @@ export function VerificationExplainer({ d }: { d: Dict }) {
         {v.steps.map((s, i) => (
           <div key={s.t} className="card">
             <span className={`chip ${tones[i]}`}>{s.t}</span>
-            <p className="mt-4 leading-relaxed text-g3">{s.d}</p>
+            <p className="mt-4 leading-relaxed text-muted">{s.d}</p>
           </div>
         ))}
       </div>
@@ -145,10 +145,10 @@ export function PartnerStrip({ locale, d }: { locale: Locale; d: Dict }) {
   const p = d.home.partner;
   return (
     <Section className="!py-12">
-      <div className="flex flex-col items-start justify-between gap-6 rounded-[2rem] border border-[#FFE08A] bg-gradient-to-r from-goldtint to-white p-8 sm:flex-row sm:items-center sm:p-10">
+      <div className="flex flex-col items-start justify-between gap-6 rounded-[2rem] border border-goldline bg-gradient-to-r from-goldsoft to-page p-8 sm:flex-row sm:items-center sm:p-10">
         <div className="max-w-2xl">
           <h2 className="text-2xl font-bold sm:text-3xl">{p.title}</h2>
-          <p className="mt-2 text-g3">{p.text}</p>
+          <p className="mt-2 text-muted">{p.text}</p>
         </div>
         <LinkButton href={href(locale, "partners")} arrow>{p.cta}</LinkButton>
       </div>
@@ -159,7 +159,7 @@ export function PartnerStrip({ locale, d }: { locale: Locale; d: Dict }) {
 export function FinalCta({ locale, d }: { locale: Locale; d: Dict }) {
   const f = d.home.finalCta;
   return (
-    <section className="bg-char text-white">
+    <section className="bg-ink text-white">
       <div className="container-x flex flex-col items-start justify-between gap-8 py-16 lg:flex-row lg:items-center">
         <div className="max-w-2xl">
           <h2 className="text-3xl font-bold leading-tight sm:text-4xl">{f.title}</h2>
@@ -167,7 +167,7 @@ export function FinalCta({ locale, d }: { locale: Locale; d: Dict }) {
         </div>
         <div className="flex flex-wrap gap-3">
           <LinkButton href={href(locale, "register")} variant="gold" arrow>{d.common.createAccount}</LinkButton>
-          <LinkButton href={href(locale, "contact")} variant="outline" className="!border-white !text-white hover:!bg-white hover:!text-char">{d.common.contactUs}</LinkButton>
+          <LinkButton href={href(locale, "contact")} variant="outline" className="!border-white !text-white hover:!bg-white hover:!text-ongold">{d.common.contactUs}</LinkButton>
         </div>
       </div>
     </section>

@@ -16,7 +16,7 @@ export function FieldError({ id, message }: { id: string; message?: string }) {
 
 export function FormBanner({ message, tone = "error" }: { message?: string; tone?: "error" | "ok" | "info" }) {
   if (!message) return null;
-  const cls = tone === "ok" ? "border-ok/40 bg-ok/5 text-ok" : tone === "info" ? "border-gold bg-goldtint text-char" : "border-danger/40 bg-danger/5 text-danger";
+  const cls = tone === "ok" ? "border-ok/40 bg-ok/5 text-ok" : tone === "info" ? "border-gold bg-goldsoft text-fg" : "border-danger/40 bg-danger/5 text-danger";
   return (
     <div role={tone === "error" ? "alert" : "status"} className={`mb-4 rounded-2xl border px-4 py-3 text-[15px] font-medium ${cls}`}>
       {message}
@@ -61,7 +61,7 @@ export function TextField({ label, name, type = "text", icon, placeholder, defau
           className={`input ${icon ? "pl-12" : ""}`}
         />
       </div>
-      {hint && !error && <p id={`${id}-h`} className="mt-1.5 text-[13px] text-g3">{hint}</p>}
+      {hint && !error && <p id={`${id}-h`} className="mt-1.5 text-[13px] text-muted">{hint}</p>}
       <FieldError id={`${id}-e`} message={error} />
     </div>
   );
@@ -97,18 +97,18 @@ export function PasswordField({ label, name = "password", placeholder, error, au
           aria-describedby={error ? `${id}-e` : hint ? `${id}-h` : undefined}
           className={`input pr-12 ${icon ? "pl-12" : ""}`}
         />
-        <button type="button" onClick={() => setShow((v) => !v)} aria-label={show ? "Hide password" : "Show password"} aria-pressed={show} className="absolute right-3 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full text-g3 hover:bg-tint">
+        <button type="button" onClick={() => setShow((v) => !v)} aria-label={show ? "Hide password" : "Show password"} aria-pressed={show} className="absolute right-3 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full text-muted hover:bg-soft">
           {show ? <IconEyeOff className="h-5 w-5" /> : <IconEye className="h-5 w-5" />}
         </button>
       </div>
       {meter && pw && (
         <div className="mt-2 flex gap-1.5" aria-hidden>
           {[1, 2, 3, 4].map((i) => (
-            <span key={i} className={`h-1.5 flex-1 rounded-full ${i <= score ? "bg-gold" : "bg-g1"}`} />
+            <span key={i} className={`h-1.5 flex-1 rounded-full ${i <= score ? "bg-gold" : "bg-line"}`} />
           ))}
         </div>
       )}
-      {hint && !error && <p id={`${id}-h`} className="mt-1.5 text-[13px] text-g3">{hint}</p>}
+      {hint && !error && <p id={`${id}-h`} className="mt-1.5 text-[13px] text-muted">{hint}</p>}
       <FieldError id={`${id}-e`} message={error} />
     </div>
   );

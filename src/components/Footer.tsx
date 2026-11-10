@@ -46,7 +46,7 @@ export function Footer({ locale, d }: { locale: Locale; d: Dict }) {
   ];
 
   return (
-    <footer className="bg-char text-white">
+    <footer className="bg-ink text-white">
       <div className="container-x py-14">
         <div className="grid gap-10 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
           <div>
@@ -78,7 +78,7 @@ export function Footer({ locale, d }: { locale: Locale; d: Dict }) {
         </div>
         <div className="mt-12 flex flex-col gap-4 border-t border-g3 pt-6 text-sm text-g2 sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} {d.meta.siteName}. {d.footer.copyright}</p>
-          <div className="[&_a]:!text-g1 [&_div]:!border-g3 [&_a[aria-current=true]]:!bg-gold [&_a[aria-current=true]]:!text-char">
+          <div className="[&_a]:!text-g1 [&_div]:!border-g3 [&_a[aria-current=true]]:!bg-gold [&_a[aria-current=true]]:!text-ongold">
             <LanguageSwitch locale={locale} label={d.nav.language} />
           </div>
         </div>

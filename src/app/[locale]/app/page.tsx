@@ -51,6 +51,12 @@ export default async function Workspace({ params }: P) {
   if (!profile) redirect(href(locale, "login"));
 
   const isStaff = STAFF.includes(profile.role);
+
+  // Staff created by the Super Admin must replace their temporary password on first sign-in (SRS §5.2).
+  if (isStaff) {
+    const { data: staff } = await supabase.from("staff_accounts").select("must_change_password").eq("profile_id", user.id).maybeSingle();
+    if (staff?.must_change_password) redirect(`${href(locale, "reset")}/update?first=1`);
+  }
   type Ver = keyof typeof t.verification;
   let verification = null as Ver | null;
   let company: string | null = null;
@@ -105,7 +111,7 @@ export default async function Workspace({ params }: P) {
                 <div className="mt-2"><StatusChip tone={verTone}>{t.verification[verification]}</StatusChip></div>
               </div>
             )}
-            <p className="rounded-2xl bg-goldtint p-4 text-[15px] leading-relaxed">
+            <p className="rounded-2xl bg-goldsoft p-4 text-[15px] leading-relaxed">
               {!contactVerified ? t.pendingNote : status === "suspended" ? d.auth.errors.suspended : t.limitedNote}
             </p>
             {!contactVerified && profile.email && <ResendForm email={profile.email} locale={locale} d={d} />}
@@ -116,12 +122,12 @@ export default async function Workspace({ params }: P) {
               <h2 className="text-2xl font-bold">{t.checklist}</h2>
               <ol className="mt-5 space-y-3">
                 {labels.map((label, i) => (
-                  <li key={label} className={`flex items-center gap-4 rounded-2xl border p-4 ${states[i] === "next" ? "border-char bg-goldtint" : "border-g1"}`}>
-                    <span className={`grid h-9 w-9 flex-none place-items-center rounded-full text-sm font-bold ${states[i] === "done" ? "bg-gold text-char" : states[i] === "next" ? "bg-char text-gold" : "bg-g1 text-g3"}`}>
+                  <li key={label} className={`flex items-center gap-4 rounded-2xl border p-4 ${states[i] === "next" ? "border-fg bg-goldsoft" : "border-line"}`}>
+                    <span className={`grid h-9 w-9 flex-none place-items-center rounded-full text-sm font-bold ${states[i] === "done" ? "bg-gold text-ongold" : states[i] === "next" ? "bg-ink text-gold" : "bg-line text-muted"}`}>
                       {states[i] === "done" ? <IconCheck className="h-4 w-4" /> : i + 1}
                     </span>
                     <span className="flex-1 font-medium">{label}</span>
-                    <span className="text-xs font-semibold uppercase tracking-wider text-g3">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-muted">
                       {states[i] === "done" ? t.done : states[i] === "next" ? t.next : t.soon}
                     </span>
                   </li>

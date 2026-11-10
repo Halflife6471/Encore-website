@@ -23,14 +23,14 @@ export function RegisterForm({ locale, d, referral }: { locale: Locale; d: Dict;
 
   if (state.ok && state.email) {
     return (
-      <div className="rounded-3xl border border-g1 bg-white p-8 shadow-soft" role="status">
+      <div className="rounded-3xl border border-line bg-surface p-8 shadow-soft" role="status">
         <span className="grid h-14 w-14 place-items-center rounded-full bg-gold"><IconMail className="h-7 w-7" /></span>
         <h1 className="mt-5 text-3xl font-semibold tracking-tight">{r.verifyTitle}</h1>
-        <p className="mt-3 text-g3">{r.verifyText} <strong className="text-char">{state.email}</strong>.</p>
-        <p className="mt-4 rounded-2xl bg-goldtint p-4 text-[15px]">{r.verifyNote}</p>
+        <p className="mt-3 text-muted">{r.verifyText} <strong className="text-fg">{state.email}</strong>.</p>
+        <p className="mt-4 rounded-2xl bg-goldsoft p-4 text-[15px]">{r.verifyNote}</p>
         <ResendForm email={state.email} locale={locale} d={d} />
-        <p className="mt-6 text-[15px] text-g3">
-          <Link href={href(locale, "login")} className="font-semibold text-char underline decoration-gold decoration-2 underline-offset-4">{r.signIn}</Link>
+        <p className="mt-6 text-[15px] text-muted">
+          <Link href={href(locale, "login")} className="font-semibold text-fg underline decoration-gold decoration-2 underline-offset-4">{r.signIn}</Link>
         </p>
       </div>
     );
@@ -45,32 +45,32 @@ export function RegisterForm({ locale, d, referral }: { locale: Locale; d: Dict;
         role="radio"
         aria-checked={on}
         onClick={() => setRole(key)}
-        className={`relative flex items-center gap-3 rounded-2xl border p-3.5 text-left transition ${on ? "border-2 border-char bg-goldtint" : "border-g1 bg-white hover:border-g2"}`}
+        className={`relative flex items-center gap-3 rounded-2xl border p-3.5 text-left transition ${on ? "border-2 border-fg bg-goldsoft" : "border-line bg-surface hover:border-g2"}`}
       >
-        <span className={`grid h-11 w-11 flex-none place-items-center rounded-xl ${on ? "bg-char text-gold" : "bg-tint text-char"}`}><Icon className="h-6 w-6" /></span>
+        <span className={`grid h-11 w-11 flex-none place-items-center rounded-xl ${on ? "bg-ink text-gold" : "bg-soft text-fg"}`}><Icon className="h-6 w-6" /></span>
         <span className="min-w-0 leading-tight">
           <span className="block font-semibold">{text.t}</span>
-          <span className="block text-[12.5px] text-g3">{text.d}</span>
+          <span className="block text-[12.5px] text-muted">{text.d}</span>
         </span>
-        {on && <span className="absolute right-3 top-3 grid h-[22px] w-[22px] place-items-center rounded-full bg-char text-white"><IconCheck className="h-3 w-3" /></span>}
+        {on && <span className="absolute right-3 top-3 grid h-[22px] w-[22px] place-items-center rounded-full bg-ink text-white"><IconCheck className="h-3 w-3" /></span>}
       </button>
     );
   };
   const inviteCard = (to: "drivers" | "partners", Icon: typeof IconBox, text: { t: string; d: string }) => (
-    <Link key={to} href={href(locale, to)} className="relative flex items-center gap-3 rounded-2xl border border-dashed border-g2 bg-tint p-3.5 transition hover:border-char">
-      <span className="grid h-11 w-11 flex-none place-items-center rounded-xl bg-white"><Icon className="h-6 w-6" /></span>
+    <Link key={to} href={href(locale, to)} className="relative flex items-center gap-3 rounded-2xl border border-dashed border-g2 bg-soft p-3.5 transition hover:border-fg">
+      <span className="grid h-11 w-11 flex-none place-items-center rounded-xl bg-surface"><Icon className="h-6 w-6" /></span>
       <span className="min-w-0 leading-tight">
         <span className="block font-semibold">{text.t}</span>
-        <span className="block text-[12.5px] text-g3">{text.d}</span>
+        <span className="block text-[12.5px] text-muted">{text.d}</span>
       </span>
-      <span className="chip absolute right-2.5 top-2.5 bg-g1 !px-2 !py-0.5 text-[10px] text-char">{r.invite}</span>
+      <span className="chip absolute right-2.5 top-2.5 bg-line !px-2 !py-0.5 text-[10px] text-fg">{r.invite}</span>
     </Link>
   );
 
   return (
     <div>
       <h1 className="text-center text-4xl font-semibold tracking-tight">{r.title}</h1>
-      <p className="mx-auto mt-2 max-w-md text-center text-[17px] font-light text-g3">{r.subtitle}</p>
+      <p className="mx-auto mt-2 max-w-md text-center text-[17px] font-light text-muted">{r.subtitle}</p>
 
       <form action={action} className="relative mt-6 space-y-4" noValidate>
         <input type="hidden" name="locale" value={locale} />
@@ -107,14 +107,14 @@ export function RegisterForm({ locale, d, referral }: { locale: Locale; d: Dict;
         {showRef ? (
           <TextField label={r.referralLabel} name="referral" placeholder="ENC-XXXX" defaultValue={v.referral ?? referral} maxLength={24} error={errText(errs, fe.referral)} hint={referral ? r.referralApplied : undefined} />
         ) : (
-          <p className="text-[13.5px] text-g3">
+          <p className="text-[13.5px] text-muted">
             {r.referralPrompt}{" "}
-            <button type="button" onClick={() => setShowRef(true)} className="font-semibold text-char underline decoration-gold decoration-2 underline-offset-2">{r.referralAdd}</button>
+            <button type="button" onClick={() => setShowRef(true)} className="font-semibold text-fg underline decoration-gold decoration-2 underline-offset-2">{r.referralAdd}</button>
           </p>
         )}
 
-        <label className="flex cursor-pointer items-start gap-3 text-[13.5px] leading-snug text-g3">
-          <input type="checkbox" name="terms" defaultChecked={v.terms === "on"} className="mt-0.5 h-5 w-5 flex-none rounded-md border-g2 accent-char" aria-invalid={!!fe.terms} />
+        <label className="flex cursor-pointer items-start gap-3 text-[13.5px] leading-snug text-muted">
+          <input type="checkbox" name="terms" defaultChecked={v.terms === "on"} className="mt-0.5 h-5 w-5 flex-none rounded-md border-g2 accent-gold" aria-invalid={!!fe.terms} />
           <span>
             {r.terms}{" "}
             <Link href={href(locale, "terms")} target="_blank" className="underline">{d.legal.terms.title}</Link> ·{" "}
@@ -122,17 +122,17 @@ export function RegisterForm({ locale, d, referral }: { locale: Locale; d: Dict;
           </span>
         </label>
         <FieldErrorLine msg={errText(errs, fe.terms)} />
-        <label className="flex cursor-pointer items-start gap-3 text-[13.5px] leading-snug text-g3">
-          <input type="checkbox" name="marketing" defaultChecked={v.marketing === "on"} className="mt-0.5 h-5 w-5 flex-none rounded-md border-g2 accent-char" />
+        <label className="flex cursor-pointer items-start gap-3 text-[13.5px] leading-snug text-muted">
+          <input type="checkbox" name="marketing" defaultChecked={v.marketing === "on"} className="mt-0.5 h-5 w-5 flex-none rounded-md border-g2 accent-gold" />
           <span>{r.marketing}</span>
         </label>
 
         <SubmitButton pending={pending} pendingText={r.submitting}>{r.submit}</SubmitButton>
       </form>
 
-      <p className="mt-5 text-center text-[15px] text-g3">
+      <p className="mt-5 text-center text-[15px] text-muted">
         {r.haveAccount}{" "}
-        <Link href={href(locale, "login")} className="font-semibold text-char underline decoration-gold decoration-2 underline-offset-4">{r.signIn}</Link>
+        <Link href={href(locale, "login")} className="font-semibold text-fg underline decoration-gold decoration-2 underline-offset-4">{r.signIn}</Link>
       </p>
     </div>
   );

@@ -31,7 +31,7 @@ export default async function Corridors({ params }: P) {
             <div key={card.t} className="card flex flex-col">
               <StatusChip tone={tone[i]}>{card.status}</StatusChip>
               <h2 className="mt-4 text-2xl font-bold">{card.t}</h2>
-              <p className="mt-2 text-g3">{card.d}</p>
+              <p className="mt-2 text-muted">{card.d}</p>
               {card.routes.length > 0 && (
                 <ul className="mt-4 space-y-1.5 text-[15px]">
                   {card.routes.map((r) => <li key={r} className="flex gap-2"><span className="mt-2 h-1.5 w-1.5 flex-none rounded-full bg-gold" />{r}</li>)}
@@ -46,7 +46,7 @@ export default async function Corridors({ params }: P) {
             </div>
           ))}
         </div>
-        <p className="mt-8 max-w-3xl rounded-2xl bg-tint p-4 text-sm text-g3">{c.border}</p>
+        <p className="mt-8 max-w-3xl rounded-2xl bg-soft p-4 text-sm text-muted">{c.border}</p>
       </Section>
       <FinalCta locale={locale} d={d} />
     </>

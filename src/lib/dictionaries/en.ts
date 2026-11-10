@@ -27,6 +27,8 @@ export const en = {
     close: "Close",
     skip: "Skip to content",
     language: "Language",
+    themeDark: "Switch to dark mode",
+    themeLight: "Switch to light mode",
   },
   common: {
     learnMore: "Learn more",

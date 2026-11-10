@@ -9,7 +9,18 @@ import { getDict, isLocale, LOCALES } from "@/lib/i18n";
 import { metadataBase } from "@/lib/seo";
 import { CONTACT, SITE_URL } from "@/lib/site";
 
-export const viewport: Viewport = { themeColor: "#1D1D1B", width: "device-width", initialScale: 1 };
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
+    { media: "(prefers-color-scheme: dark)", color: "#1D1D1B" },
+  ],
+  colorScheme: "light dark",
+  width: "device-width",
+  initialScale: 1,
+};
+
+/** Runs before first paint so the saved (or system) theme never flashes the wrong colours. */
+const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem("enc_theme");if(t!=="light"&&t!=="dark"){t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}document.documentElement.dataset.theme=t}catch(e){document.documentElement.dataset.theme="light"}})()`;
 
 export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }));
@@ -48,7 +59,10 @@ export default async function LocaleLayout({ children, params }: { children: Rea
   };
 
   return (
-    <html lang={locale}>
+    <html lang={locale} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body className="min-h-screen font-sans antialiased">
         <Header locale={locale} nav={d.nav} />
         <main id="main">{children}</main>

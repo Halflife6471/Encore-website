@@ -21,14 +21,14 @@ export function LoginForm({ locale, d, notice }: { locale: Locale; d: Dict; noti
   return (
     <div>
       <h1 className="text-center text-4xl font-semibold tracking-tight">{l.title}</h1>
-      <p className="mt-2 text-center text-[17px] font-light text-g3">{l.subtitle}</p>
+      <p className="mt-2 text-center text-[17px] font-light text-muted">{l.subtitle}</p>
 
-      <div className="mt-6 flex items-center justify-between gap-3 rounded-2xl border border-[#FFE08A] bg-gradient-to-r from-goldtint to-white p-3.5 pl-4">
+      <div className="mt-6 flex items-center justify-between gap-3 rounded-2xl border border-goldline bg-gradient-to-r from-goldsoft to-page p-3.5 pl-4">
         <div className="flex items-center gap-3.5">
-          <span className="grid h-12 w-12 flex-none place-items-center rounded-full bg-char text-white"><IconUserPlus className="h-[22px] w-[22px]" /></span>
+          <span className="grid h-12 w-12 flex-none place-items-center rounded-full bg-ink text-white"><IconUserPlus className="h-[22px] w-[22px]" /></span>
           <div className="leading-tight">
             <p className="font-medium">{l.newTitle}</p>
-            <p className="text-[13px] text-g3">{l.newText}</p>
+            <p className="text-[13px] text-muted">{l.newText}</p>
           </div>
         </div>
         <Link href={href(locale, "register")} className="btn btn-primary btn-sm rounded-xl">{l.signUp}</Link>
@@ -44,7 +44,7 @@ export function LoginForm({ locale, d, notice }: { locale: Locale; d: Dict; noti
         {state.error && <FormBanner message={errText(errs, state.error)} />}
         {state.error === "not_confirmed" && state.email && <ResendForm email={state.email} locale={locale} d={d} />}
 
-        <div role="tablist" aria-label="Sign-in method" className="mb-4 grid grid-cols-2 rounded-2xl bg-tint p-1.5">
+        <div role="tablist" aria-label="Sign-in method" className="mb-4 grid grid-cols-2 rounded-2xl bg-soft p-1.5">
           {(["email", "phone"] as const).map((m) => (
             <button
               key={m}
@@ -52,7 +52,7 @@ export function LoginForm({ locale, d, notice }: { locale: Locale; d: Dict; noti
               role="tab"
               aria-selected={mode === m}
               onClick={() => setMode(m)}
-              className={`rounded-xl py-3 text-base font-medium transition ${mode === m ? "bg-white text-char shadow-[0_1px_4px_rgba(29,29,27,.12)]" : "text-g3"}`}
+              className={`rounded-xl py-3 text-base font-medium transition ${mode === m ? "bg-surface text-fg shadow-[0_1px_4px_rgba(29,29,27,.12)]" : "text-muted"}`}
             >
               {m === "email" ? l.email : l.phone}
             </button>
@@ -70,7 +70,7 @@ export function LoginForm({ locale, d, notice }: { locale: Locale; d: Dict; noti
 
         <div className="my-5 flex items-center justify-between text-[15px]">
           <label className="flex cursor-pointer items-center gap-2.5">
-            <input type="checkbox" name="remember" defaultChecked className="h-5 w-5 rounded-md border-g2 accent-char" />
+            <input type="checkbox" name="remember" defaultChecked className="h-5 w-5 rounded-md border-g2 accent-gold" />
             {l.remember}
           </label>
           <Link href={`${href(locale, "reset")}`} className="font-medium underline decoration-gold decoration-2 underline-offset-4">{l.forgot}</Link>
@@ -79,11 +79,11 @@ export function LoginForm({ locale, d, notice }: { locale: Locale; d: Dict; noti
         <SubmitButton pending={pending} pendingText={l.submitting}>{l.submit}</SubmitButton>
       </form>
 
-      <p className="mt-6 text-center text-[15px] text-g3">
+      <p className="mt-6 text-center text-[15px] text-muted">
         {l.staff}{" "}
-        <Link href={href(locale, "staff")} className="font-semibold text-char underline decoration-gold decoration-2 underline-offset-4">{l.staffLink}</Link>
+        <Link href={href(locale, "staff")} className="font-semibold text-fg underline decoration-gold decoration-2 underline-offset-4">{l.staffLink}</Link>
       </p>
-      <p className="mt-2 text-center text-[13px] text-g3">
+      <p className="mt-2 text-center text-[13px] text-muted">
         {l.terms}{" "}
         <Link href={href(locale, "terms")} className="underline">{d.legal.terms.title}</Link> {l.and}{" "}
         <Link href={href(locale, "privacy")} className="underline">{d.legal.privacy.title}</Link>

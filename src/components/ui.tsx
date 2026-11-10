@@ -3,16 +3,17 @@ import Link from "next/link";
 import type { ReactNode, SVGProps } from "react";
 
 /* ----------------------------------------------------------------- Logo */
+/** `default` follows the theme (dark wordmark on light, white wordmark on dark); `reversed` is always the white wordmark. */
 export function Logo({ variant = "default", className = "h-11 w-auto" }: { variant?: "default" | "reversed"; className?: string }) {
+  const img = (src: string, extra = "") => (
+    <Image src={src} alt={extra ? "" : "Encore Holdings Group"} aria-hidden={extra ? true : undefined} width={1520} height={442} priority className={`${className} ${extra}`} />
+  );
+  if (variant === "reversed") return img("/brand/encore-logo-horizontal-reversed.png");
   return (
-    <Image
-      src={variant === "reversed" ? "/brand/encore-logo-horizontal-reversed.png" : "/brand/encore-logo-horizontal.png"}
-      alt="Encore Holdings Group"
-      width={1520}
-      height={442}
-      priority
-      className={className}
-    />
+    <>
+      {img("/brand/encore-logo-horizontal.png", "dark:hidden")}
+      <Image src="/brand/encore-logo-horizontal-reversed.png" alt="Encore Holdings Group" width={1520} height={442} priority className={`${className} hidden dark:block`} />
+    </>
   );
 }
 
@@ -35,6 +36,8 @@ export const IconLink = (p: P) => (<svg {...base} {...p}><path d="M10 14a4 4 0 0
 export const IconChat = (p: P) => (<svg {...base} {...p}><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" /></svg>);
 export const IconInstagram = (p: P) => (<svg {...base} {...p}><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none" /></svg>);
 export const IconFacebook = (p: P) => (<svg {...base} {...p}><path d="M14 8h3V4h-3a4 4 0 0 0-4 4v3H7v4h3v6h4v-6h3l1-4h-4V8.5A.5.5 0 0 1 14 8z" /></svg>);
+export const IconSun = (p: P) => (<svg {...base} {...p}><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>);
+export const IconMoon = (p: P) => (<svg {...base} {...p}><path d="M20 14.5A8 8 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z" /></svg>);
 export const IconMenu = (p: P) => (<svg {...base} strokeWidth={2} {...p}><path d="M4 7h16M4 12h16M4 17h16" /></svg>);
 export const IconClose = (p: P) => (<svg {...base} strokeWidth={2} {...p}><path d="M6 6l12 12M18 6L6 18" /></svg>);
 export const IconChevron = (p: P) => (<svg {...base} strokeWidth={2} {...p}><path d="M6 9l6 6 6-6" /></svg>);
@@ -43,7 +46,7 @@ export const IconStar = (p: P) => (<svg viewBox="0 0 40 40" aria-hidden {...p}><
 /* -------------------------------------------------------- Layout helpers */
 export function Section({ children, className = "", tint = false, dark = false, id }: { children: ReactNode; className?: string; tint?: boolean; dark?: boolean; id?: string }) {
   return (
-    <section id={id} className={`py-16 sm:py-20 lg:py-24 ${dark ? "bg-char text-white" : tint ? "bg-tint" : ""} ${className}`}>
+    <section id={id} className={`py-16 sm:py-20 lg:py-24 ${dark ? "bg-ink text-white" : tint ? "bg-soft" : ""} ${className}`}>
       <div className="container-x">{children}</div>
     </section>
   );
@@ -54,20 +57,20 @@ export function SectionHead({ eyebrow, title, lead, center = false, dark = false
     <div className={`mb-10 max-w-3xl ${center ? "mx-auto text-center" : ""}`}>
       {eyebrow && <p className={`eyebrow ${dark ? "!text-gold" : ""}`}>{eyebrow}</p>}
       <h2 className="mt-2 text-3xl font-bold leading-tight tracking-tight sm:text-4xl">{title}</h2>
-      {lead && <p className={`mt-4 text-lg font-light leading-relaxed ${dark ? "text-g1" : "text-g3"}`}>{lead}</p>}
+      {lead && <p className={`mt-4 text-lg font-light leading-relaxed ${dark ? "text-g1" : "text-muted"}`}>{lead}</p>}
     </div>
   );
 }
 
 export function PageHero({ title, lead, eyebrow, children }: { title: string; lead?: string; eyebrow?: string; children?: ReactNode }) {
   return (
-    <div className="relative overflow-hidden border-b border-g1 bg-white">
+    <div className="relative overflow-hidden border-b border-line bg-surface">
       <div aria-hidden className="pointer-events-none absolute -left-24 top-10 h-72 w-[34rem] rounded-full bg-gold/25 blur-3xl" />
-      <div aria-hidden className="pointer-events-none absolute right-0 top-0 h-80 w-80 rounded-full border border-g1" />
+      <div aria-hidden className="pointer-events-none absolute right-0 top-0 h-80 w-80 rounded-full border border-line" />
       <div className="container-x relative py-14 sm:py-20">
         {eyebrow && <p className="eyebrow mb-3">{eyebrow}</p>}
         <h1 className="max-w-4xl text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl">{title}</h1>
-        {lead && <p className="mt-5 max-w-3xl text-lg font-light leading-relaxed text-g3 sm:text-xl">{lead}</p>}
+        {lead && <p className="mt-5 max-w-3xl text-lg font-light leading-relaxed text-muted sm:text-xl">{lead}</p>}
         {children && <div className="mt-8 flex flex-wrap gap-3">{children}</div>}
       </div>
     </div>
@@ -78,7 +81,7 @@ export function CheckList({ items, className = "" }: { items: readonly string[];
   return (
     <ul className={`space-y-2.5 ${className}`}>
       {items.map((t) => (
-        <li key={t} className="flex gap-3 text-g3">
+        <li key={t} className="flex gap-3 text-muted">
           <span className="mt-1.5 h-2.5 w-2.5 flex-none rounded-full bg-gold" aria-hidden />
           <span>{t}</span>
         </li>
@@ -91,8 +94,8 @@ export function NumberedSteps({ items, dark = false }: { items: readonly string[
   return (
     <ol className="grid gap-3 sm:grid-cols-2">
       {items.map((t, i) => (
-        <li key={t} className={`flex items-center gap-4 rounded-2xl border p-4 ${dark ? "border-g3 bg-g3/40" : "border-g1 bg-white"}`}>
-          <span className="grid h-9 w-9 flex-none place-items-center rounded-full bg-char text-sm font-bold text-gold">{i + 1}</span>
+        <li key={t} className={`flex items-center gap-4 rounded-2xl border p-4 ${dark ? "border-g3 bg-g3/40" : "border-line bg-surface"}`}>
+          <span className="grid h-9 w-9 flex-none place-items-center rounded-full bg-ink text-sm font-bold text-gold">{i + 1}</span>
           <span className="font-medium">{t}</span>
         </li>
       ))}
@@ -112,9 +115,9 @@ export function LinkButton({ href, children, variant = "primary", className = ""
 
 export function InfoCard({ title, children, dark = false }: { title: string; children: ReactNode; dark?: boolean }) {
   return (
-    <div className={`rounded-3xl p-6 ${dark ? "bg-char text-white" : "card"}`}>
+    <div className={`rounded-3xl p-6 ${dark ? "bg-ink text-white" : "card"}`}>
       <h3 className={`text-lg font-bold ${dark ? "text-gold" : ""}`}>{title}</h3>
-      <div className={`mt-3 ${dark ? "text-g1" : "text-g3"} leading-relaxed`}>{children}</div>
+      <div className={`mt-3 ${dark ? "text-g1" : "text-muted"} leading-relaxed`}>{children}</div>
     </div>
   );
 }
@@ -122,6 +125,6 @@ export function InfoCard({ title, children, dark = false }: { title: string; chi
 /** Verification / status chip using brand colours only (never shows "verified" unless told to). */
 export function StatusChip({ tone, children }: { tone: "grey" | "gold" | "dark" | "danger"; children: ReactNode }) {
   const cls =
-    tone === "dark" ? "bg-char text-white" : tone === "gold" ? "bg-gold text-char" : tone === "danger" ? "border border-danger text-danger bg-white" : "bg-g1 text-char";
+    tone === "dark" ? "bg-fg text-page" : tone === "gold" ? "bg-gold text-ongold" : tone === "danger" ? "border border-danger text-danger bg-surface" : "bg-line text-fg";
   return <span className={`chip ${cls}`}>{children}</span>;
 }

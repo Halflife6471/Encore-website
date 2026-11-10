@@ -1,42 +1,95 @@
 @import "tailwindcss";
 @import "@fontsource-variable/outfit/index.css";
 
-/* Encore brand tokens – SRD §4.2 (SRS §6.9) */
+/* ---------------------------------------------------------------------------
+   Encore brand palette (SRD §4.2 / SRS §6.9). Dark mode uses ONLY these colours
+   (and mixes of them): charcoal, black, greys, white and gold.
+--------------------------------------------------------------------------- */
 @theme {
   --color-gold: #ffbc0d;
   --color-char: #1d1d1b;
   --color-g1: #d1d3d4;
   --color-g2: #a7a9ac;
   --color-g3: #3d4348;
-  --color-ink: #000000;
-  /* derived tints (SRD §4.2) */
-  --color-tint: #f3f4f4;
-  --color-goldtint: #fff4d1;
-  /* functional colours for form feedback only */
-  --color-danger: #c62828;
-  --color-ok: #2e7d32;
-
-  --font-sans: "Outfit Variable", ui-sans-serif, system-ui, sans-serif;
-  --shadow-soft: 0 8px 30px rgba(29, 29, 27, 0.08);
-  --shadow-lift: 0 14px 40px rgba(29, 29, 27, 0.14);
+  --color-ongold: #1d1d1b; /* text on gold: always charcoal (10:1) */
 }
+
+/* Semantic tokens – every component uses these, never raw palette values for surfaces/text. */
+:root {
+  color-scheme: light;
+  --page: #ffffff;
+  --surface: #ffffff;
+  --soft: #f3f4f4; /* mix of white + #D1D3D4 */
+  --fg: #1d1d1b;
+  --muted: #3d4348;
+  --line: #d1d3d4;
+  --goldsoft: #fff4d1;
+  --goldline: #ffe08a;
+  --ink: #1d1d1b; /* dark bands: footer, pillars, final CTA */
+  --danger: #c62828;
+  --ok: #2e7d32;
+  --scene-a: #f3f4f4;
+  --scene-b: #e6e7e8;
+  --scene-c: #d1d3d4;
+  --shadow-a: rgba(29, 29, 27, 0.08);
+  --shadow-b: rgba(29, 29, 27, 0.14);
+}
+[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #1d1d1b; /* charcoal */
+  --surface: color-mix(in srgb, #1d1d1b 52%, #3d4348); /* charcoal lifted toward dark grey */
+  --soft: color-mix(in srgb, #1d1d1b 72%, #3d4348);
+  --fg: #ffffff;
+  --muted: #d1d3d4;
+  --line: #3d4348;
+  --goldsoft: color-mix(in srgb, #ffbc0d 14%, #1d1d1b);
+  --goldline: color-mix(in srgb, #ffbc0d 38%, #1d1d1b);
+  --ink: #000000; /* black bands against charcoal pages */
+  --danger: #ff8a80;
+  --ok: #7ddc82;
+  --scene-a: #3d4348;
+  --scene-b: #2b2e30;
+  --scene-c: #1d1d1b;
+  --shadow-a: rgba(0, 0, 0, 0.35);
+  --shadow-b: rgba(0, 0, 0, 0.5);
+}
+
+@theme inline {
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-soft: var(--soft);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-goldsoft: var(--goldsoft);
+  --color-goldline: var(--goldline);
+  --color-ink: var(--ink);
+  --color-danger: var(--danger);
+  --color-ok: var(--ok);
+  --font-sans: "Outfit Variable", ui-sans-serif, system-ui, sans-serif;
+  --shadow-soft: 0 8px 30px var(--shadow-a);
+  --shadow-lift: 0 14px 40px var(--shadow-b);
+}
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 html {
   scroll-behavior: smooth;
 }
 body {
   font-family: var(--font-sans);
-  color: var(--color-char);
-  background: #fff;
+  color: var(--fg);
+  background: var(--page);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 ::selection {
   background: var(--color-gold);
-  color: var(--color-char);
+  color: var(--color-ongold);
 }
 :focus-visible {
-  outline: 2px solid var(--color-char);
+  outline: 2px solid var(--fg);
   outline-offset: 2px;
   box-shadow: 0 0 0 5px rgba(255, 188, 13, 0.55);
 }
@@ -52,46 +105,54 @@ body {
 }
 
 @layer components {
+  /* Anything on a gold background is dark text unless a text class says otherwise. */
+  .bg-gold {
+    color: var(--color-ongold);
+  }
   .btn {
     @apply inline-flex cursor-pointer items-center justify-center gap-2.5 whitespace-nowrap rounded-full px-7 py-4 text-base font-semibold leading-none transition disabled:cursor-not-allowed disabled:opacity-60;
   }
   .btn-primary {
-    @apply bg-char text-white hover:bg-g3;
+    @apply bg-fg text-page hover:bg-muted;
   }
   .btn-gold {
-    @apply bg-gold text-char hover:brightness-95;
+    @apply bg-gold text-ongold hover:brightness-95;
   }
   .btn-outline {
-    @apply border-2 border-char bg-transparent text-char hover:bg-char hover:text-white;
+    @apply border-2 border-fg bg-transparent text-fg hover:bg-fg hover:text-page;
   }
   .btn-sm {
     @apply px-5 py-3 text-sm;
   }
   .input {
-    @apply h-14 w-full rounded-[14px] border border-g1 bg-white px-4 text-base text-char outline-none transition placeholder:text-g2 focus:border-char focus:ring-4 focus:ring-gold/45;
+    @apply h-14 w-full rounded-[14px] border border-line bg-page px-4 text-base text-fg outline-none transition placeholder:text-g2 focus:border-fg focus:ring-4 focus:ring-gold/45;
   }
   .input[aria-invalid="true"] {
     @apply border-danger;
   }
   .label {
-    @apply mb-1.5 block text-[15px] font-medium text-char;
+    @apply mb-1.5 block text-[15px] font-medium text-fg;
   }
   .eyebrow {
-    @apply text-xs font-semibold uppercase tracking-[0.16em] text-g3;
+    @apply text-xs font-semibold uppercase tracking-[0.16em] text-muted;
   }
   .card {
-    @apply rounded-3xl border border-g1 bg-white p-6 shadow-soft;
+    @apply rounded-3xl border border-line bg-surface p-6 shadow-soft;
   }
   .chip {
-    @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider;
+    @apply inline-flex w-fit items-center rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider;
   }
   .container-x {
     @apply mx-auto w-full max-w-[1200px] px-4 sm:px-6 lg:px-8;
   }
   .prose-encore p {
-    @apply mb-4 leading-relaxed text-g3;
+    @apply mb-4 leading-relaxed text-muted;
   }
   .prose-encore h2 {
     @apply mb-3 mt-10 text-2xl font-bold;
+  }
+  /* Gold underline-on-hover link used across the site */
+  .link-gold {
+    @apply font-semibold underline decoration-gold decoration-2 underline-offset-4 transition hover:decoration-4;
   }
 }

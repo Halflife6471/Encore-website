@@ -8,9 +8,9 @@ export default function NotFound() {
     <div className="container-x py-28 text-center">
       <p className="text-8xl font-extrabold text-gold">404</p>
       <h1 className="mt-4 text-4xl font-bold">{en.common.notFoundTitle}</h1>
-      <p className="mt-3 text-g3">{en.common.notFoundText}</p>
-      <h2 className="mt-8 text-2xl font-semibold text-g3">{sw.common.notFoundTitle}</h2>
-      <p className="mt-2 text-g3">{sw.common.notFoundText}</p>
+      <p className="mt-3 text-muted">{en.common.notFoundText}</p>
+      <h2 className="mt-8 text-2xl font-semibold text-muted">{sw.common.notFoundTitle}</h2>
+      <p className="mt-2 text-muted">{sw.common.notFoundText}</p>
       <div className="mt-8 flex justify-center gap-3">
         <Link href="/en" className="btn btn-primary">{en.common.backHome}</Link>
         <Link href="/sw" className="btn btn-outline">{sw.common.backHome}</Link>

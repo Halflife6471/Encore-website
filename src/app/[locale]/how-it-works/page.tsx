@@ -31,7 +31,7 @@ export default async function HowItWorks({ params }: P) {
             <h2 className="text-2xl font-bold">{h.tabs.cargo}</h2>
             <ol className="mt-5 space-y-3">
               {h.cargoSteps.map((s, i) => (
-                <li key={s} className="flex items-start gap-3"><span className="grid h-7 w-7 flex-none place-items-center rounded-full bg-gold text-sm font-bold">{i + 1}</span><span className="text-g3">{s}</span></li>
+                <li key={s} className="flex items-start gap-3"><span className="grid h-7 w-7 flex-none place-items-center rounded-full bg-gold text-sm font-bold">{i + 1}</span><span className="text-muted">{s}</span></li>
               ))}
             </ol>
             <div className="mt-6"><LinkButton href={href(locale, "register")} variant="gold" className="btn-sm">{d.common.registerCargoOwner}</LinkButton></div>
@@ -40,7 +40,7 @@ export default async function HowItWorks({ params }: P) {
             <h2 className="text-2xl font-bold">{h.tabs.trucks}</h2>
             <ol className="mt-5 space-y-3">
               {h.truckSteps.map((s, i) => (
-                <li key={s} className="flex items-start gap-3"><span className="grid h-7 w-7 flex-none place-items-center rounded-full bg-char text-sm font-bold text-gold">{i + 1}</span><span className="text-g3">{s}</span></li>
+                <li key={s} className="flex items-start gap-3"><span className="grid h-7 w-7 flex-none place-items-center rounded-full bg-ink text-sm font-bold text-gold">{i + 1}</span><span className="text-muted">{s}</span></li>
               ))}
             </ol>
             <div className="mt-6"><LinkButton href={href(locale, "register")} variant="gold" className="btn-sm">{d.common.registerTransporter}</LinkButton></div>
@@ -51,7 +51,7 @@ export default async function HowItWorks({ params }: P) {
         <div className="grid gap-5 md:grid-cols-2">
           {h.sections.map((s, i) => <InfoCard key={s.t} title={s.t} dark={i === 2}>{s.d}</InfoCard>)}
         </div>
-        <p className="mt-8 max-w-3xl text-sm text-g3">{d.common.srsNote}</p>
+        <p className="mt-8 max-w-3xl text-sm text-muted">{d.common.srsNote}</p>
       </Section>
       <FinalCta locale={locale} d={d} />
     </>

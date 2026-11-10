@@ -23,10 +23,10 @@ export default async function Verify({ params, searchParams }: P) {
   const valid = email && /^\S+@\S+\.\S+$/.test(email) ? email : undefined;
   return (
     <AuthShell locale={locale} d={d} variant="register">
-      <div className="rounded-3xl border border-g1 p-8 shadow-soft">
+      <div className="rounded-3xl border border-line p-8 shadow-soft">
         <span className="grid h-14 w-14 place-items-center rounded-full bg-gold"><IconMail className="h-7 w-7" /></span>
         <h1 className="mt-5 text-3xl font-semibold tracking-tight">{d.auth.verify.title}</h1>
-        <p className="mt-3 text-g3">{d.auth.verify.text}</p>
+        <p className="mt-3 text-muted">{d.auth.verify.text}</p>
         {valid && <ResendForm email={valid} locale={locale} d={d} />}
         <div className="mt-6"><LinkButton href={href(locale, "login")} variant="outline" className="btn-sm">{d.auth.verify.goLogin}</LinkButton></div>
       </div>

@@ -31,14 +31,14 @@ export default async function Faq({ params }: P) {
           {f.groups.map((g, gi) => (
             <div key={g.t} id={`g${gi + 1}`}>
               <h2 className="mb-4 text-2xl font-bold">{g.t}</h2>
-              <div className="divide-y divide-g1 rounded-3xl border border-g1">
+              <div className="divide-y divide-line rounded-3xl border border-line">
                 {g.items.map((it) => (
-                  <details key={it.q} className="group px-6 py-4 open:bg-tint">
+                  <details key={it.q} className="group px-6 py-4 open:bg-soft">
                     <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-semibold [&::-webkit-details-marker]:hidden">
                       {it.q}
                       <IconChevron className="h-5 w-5 flex-none transition group-open:rotate-180" />
                     </summary>
-                    <p className="mt-3 leading-relaxed text-g3">{it.a}</p>
+                    <p className="mt-3 leading-relaxed text-muted">{it.a}</p>
                   </details>
                 ))}
               </div>
