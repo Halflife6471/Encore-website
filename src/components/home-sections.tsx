@@ -16,7 +16,7 @@ export function Hero({ locale, d }: { locale: Locale; d: Dict }) {
       <div aria-hidden className="pointer-events-none absolute bottom-0 right-16 top-0 hidden border-l border-dashed border-g2 lg:block" />
 
       <div className="container-x relative grid gap-10 pb-16 pt-12 sm:pt-16 lg:grid-cols-[1.25fr_1fr] lg:items-start lg:gap-8 lg:pb-24 lg:pt-20">
-        <h1 className="text-[clamp(2.7rem,7.4vw,6rem)] font-extrabold leading-[0.97] tracking-[-0.025em]">
+        <h1 className="text-[clamp(2.35rem,7.4vw,6rem)] [overflow-wrap:anywhere] font-extrabold leading-[0.97] tracking-[-0.025em]">
           <span className="block">{h.a}</span>
           <span className="block">{h.b}</span>
           <span className="block font-bold italic"><span className="bg-[linear-gradient(transparent_60%,var(--color-gold)_60%,var(--color-gold)_92%,transparent_92%)] px-1 dark:bg-none dark:text-gold">{h.c}</span></span>

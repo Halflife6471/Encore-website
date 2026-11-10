@@ -22,7 +22,7 @@ export function AuthShell({
     <div className="min-h-[calc(100vh-84px)] bg-surface">
       <div className="h-1.5 bg-gold lg:hidden" />
       <div className="mx-auto grid max-w-[1400px] gap-8 px-4 py-8 sm:px-8 lg:grid-cols-[minmax(0,600px)_1fr] lg:gap-14 lg:px-10 lg:py-10">
-        <div className="flex flex-col">
+        <div className="mx-auto flex w-full max-w-[600px] flex-col lg:mx-0">
           {children}
         </div>
 

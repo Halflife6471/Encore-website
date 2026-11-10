@@ -48,8 +48,8 @@ export function Footer({ locale, d }: { locale: Locale; d: Dict }) {
   return (
     <footer className="bg-ink text-white">
       <div className="container-x py-14">
-        <div className="grid gap-10 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
-          <div>
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
+          <div className="col-span-2 lg:col-span-1">
             <Logo variant="reversed" className="h-14 w-auto" />
             <p className="mt-5 max-w-xs font-semibold text-gold">{d.meta.tagline}</p>
             <p className="mt-1 italic text-g1">{d.meta.slogan}</p>
@@ -66,10 +66,10 @@ export function Footer({ locale, d }: { locale: Locale; d: Dict }) {
           {cols.map((c) => (
             <nav key={c.title} aria-label={c.title}>
               <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-gold">{c.title}</h3>
-              <ul className="space-y-2.5">
+              <ul className="space-y-1">
                 {c.links.map((l) => (
                   <li key={l.key}>
-                    <Link href={href(locale, l.key)} className="font-light text-g1 transition hover:text-white">{l.label}</Link>
+                    <Link href={href(locale, l.key)} className="inline-block py-1.5 font-light text-g1 transition hover:text-white">{l.label}</Link>
                   </li>
                 ))}
               </ul>
