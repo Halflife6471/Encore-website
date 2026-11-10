@@ -76,11 +76,11 @@ export function Header({ locale, nav }: { locale: Locale; nav: Dict["nav"] }) {
         <div className="hidden items-center gap-5 lg:flex">
           <LanguageSwitch locale={locale} label={nav.language} />
           {phone && (
-            <a href={CONTACT.phone ? `tel:${CONTACT.phone.replace(/\s/g, "")}` : undefined} className="flex items-center gap-3">
+            <a href={CONTACT.phone ? `tel:${CONTACT.phone.replace(/\s/g, "")}` : undefined} className="hidden items-center gap-3 xl:flex">
               <span className="grid h-11 w-11 place-items-center rounded-full bg-goldtint"><IconPhone className="h-5 w-5" /></span>
               <span className="leading-tight">
                 <span className="block text-[11px] font-medium uppercase tracking-[0.18em] text-g3">{nav.support}</span>
-                <span className="block text-[17px] font-semibold">{phone}</span>
+                <span className="block whitespace-nowrap text-[17px] font-semibold">{phone}</span>
               </span>
             </a>
           )}

@@ -3,7 +3,7 @@ import type { Dict } from "@/lib/dictionaries/en";
 import type { Locale } from "@/lib/i18n-config";
 import { href, type RouteKey } from "@/lib/routes";
 import { CONTACT } from "@/lib/site";
-import { Logo } from "./ui";
+import { IconFacebook, IconInstagram, Logo } from "./ui";
 import { LanguageSwitch } from "./LanguageSwitch";
 
 export function Footer({ locale, d }: { locale: Locale; d: Dict }) {
@@ -53,12 +53,15 @@ export function Footer({ locale, d }: { locale: Locale; d: Dict }) {
             <Logo variant="reversed" className="h-14 w-auto" />
             <p className="mt-5 max-w-xs font-semibold text-gold">{d.meta.tagline}</p>
             <p className="mt-1 italic text-g1">{d.meta.slogan}</p>
-            {(CONTACT.email || CONTACT.phone) && (
-              <ul className="mt-5 space-y-1 text-sm text-g1">
-                {CONTACT.phone && <li>{CONTACT.phone}</li>}
-                {CONTACT.email && <li><a className="hover:text-white" href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></li>}
-              </ul>
-            )}
+            <ul className="mt-5 space-y-1.5 text-sm text-g1">
+              <li><a className="hover:text-white" href={`tel:${CONTACT.phone.replace(/\s/g, "")}`}>{CONTACT.phone}</a></li>
+              <li><a className="hover:text-white" href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a></li>
+              <li>{CONTACT.address.box}, {CONTACT.address.city}, {CONTACT.address.country}</li>
+            </ul>
+            <div className="mt-4 flex gap-2">
+              <a href={CONTACT.instagram} target="_blank" rel="noopener noreferrer" aria-label={`Instagram ${CONTACT.handle}`} className="grid h-10 w-10 place-items-center rounded-full border border-g3 text-g1 transition hover:border-gold hover:text-gold"><IconInstagram className="h-5 w-5" /></a>
+              <a href={CONTACT.facebook} target="_blank" rel="noopener noreferrer" aria-label={`Facebook ${CONTACT.handle}`} className="grid h-10 w-10 place-items-center rounded-full border border-g3 text-g1 transition hover:border-gold hover:text-gold"><IconFacebook className="h-5 w-5" /></a>
+            </div>
           </div>
           {cols.map((c) => (
             <nav key={c.title} aria-label={c.title}>

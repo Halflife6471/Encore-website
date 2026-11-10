@@ -1,10 +1,17 @@
 /** Site-wide constants and environment-driven contact details (never invented). */
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
 
+/** Official Encore contact details (supplied by the client). Environment variables can override them per deployment. */
+const phoneRaw = process.env.NEXT_PUBLIC_SUPPORT_PHONE || "+255 744 889 900";
 export const CONTACT = {
-  phone: process.env.NEXT_PUBLIC_SUPPORT_PHONE || "",
-  whatsapp: (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "").replace(/[^\d]/g, ""),
-  email: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "",
+  phone: phoneRaw,
+  /** Calls and WhatsApp share the same number. Digits only, with country code, for wa.me links. */
+  whatsapp: (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "255744889900").replace(/[^\d]/g, ""),
+  email: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "info@encoreholdings.africa",
+  instagram: "https://www.instagram.com/encoreholdings_group",
+  facebook: "https://www.facebook.com/encoreholdings_group",
+  handle: "@encoreholdings_group",
+  address: { box: "P.O. Box 72757", city: "Dar es Salaam", country: "Tanzania" },
 };
 
 /** Shown only in non-production so layouts can be reviewed; production shows nothing until Encore supplies real values. */

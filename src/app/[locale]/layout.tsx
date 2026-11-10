@@ -7,6 +7,7 @@ import { Header } from "@/components/Header";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { getDict, isLocale, LOCALES } from "@/lib/i18n";
 import { metadataBase } from "@/lib/seo";
+import { CONTACT, SITE_URL } from "@/lib/site";
 
 export const viewport: Viewport = { themeColor: "#1D1D1B", width: "device-width", initialScale: 1 };
 
@@ -37,6 +38,11 @@ export default async function LocaleLayout({ children, params }: { children: Rea
     name: d.meta.siteName,
     slogan: d.meta.tagline,
     description: d.meta.description,
+    url: SITE_URL,
+    email: CONTACT.email,
+    telephone: CONTACT.phone,
+    address: { "@type": "PostalAddress", postOfficeBoxNumber: "72757", addressLocality: CONTACT.address.city, addressCountry: "TZ" },
+    sameAs: [CONTACT.instagram, CONTACT.facebook],
   };
 
   return (

@@ -285,6 +285,8 @@ export const en = {
     },
     channelsTitle: "Other ways to reach us",
     phone: "Support phone",
+    address: "Postal address",
+    social: "Follow us",
     whatsapp: "WhatsApp",
     email: "Email",
     pending: "Contact details will be published here once confirmed.",

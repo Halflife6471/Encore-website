@@ -284,6 +284,8 @@ export const sw: Dict = {
     },
     channelsTitle: "Njia nyingine za kuwasiliana nasi",
     phone: "Simu ya msaada",
+    address: "Anwani ya posta",
+    social: "Tufuate",
     whatsapp: "WhatsApp",
     email: "Barua pepe",
     pending: "Mawasiliano rasmi yatachapishwa hapa yakithibitishwa.",
