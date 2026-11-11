@@ -1,35 +1,39 @@
+import Image from "next/image";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import type { Dict } from "@/lib/dictionaries/en";
 import type { Locale } from "@/lib/i18n-config";
 import { href, type RouteKey } from "@/lib/routes";
 import { CorridorMap } from "./CorridorMap";
+import { TypedHeadline } from "./TypedHeadline";
 import { IconArrow, IconBox, IconLink, IconStar, IconTruck, IconWheel, LinkButton, Section, SectionHead } from "./ui";
 
 export function Hero({ locale, d }: { locale: Locale; d: Dict }) {
   const h = d.home.hero;
   return (
-    <section className="relative overflow-hidden border-b border-line bg-surface">
-      <div aria-hidden className="pointer-events-none absolute -left-32 top-1/3 h-[26rem] w-[40rem] rounded-full bg-gold/30 blur-3xl" />
+    <section className="relative overflow-hidden border-b border-line bg-page">
+      <div aria-hidden className="pointer-events-none absolute -left-32 top-1/4 h-[26rem] w-[40rem] rounded-full bg-gold/30 blur-3xl" />
       <div aria-hidden className="pointer-events-none absolute left-1/3 top-1/2 h-[26rem] w-[40rem] rounded-full bg-g2/25 blur-3xl" />
       <div aria-hidden className="pointer-events-none absolute -right-40 -top-24 hidden h-[44rem] w-[44rem] rounded-full border border-line lg:block" />
       <div aria-hidden className="pointer-events-none absolute -right-4 top-16 hidden h-[30rem] w-[30rem] rounded-full border border-line lg:block" />
       <div aria-hidden className="pointer-events-none absolute bottom-0 right-16 top-0 hidden border-l border-dashed border-g2 lg:block" />
 
-      <div className="container-x relative grid gap-10 pb-16 pt-12 sm:pt-16 lg:grid-cols-[1.25fr_1fr] lg:items-start lg:gap-8 lg:pb-24 lg:pt-20">
-        <h1 className="text-[clamp(2.35rem,7.4vw,6rem)] [overflow-wrap:anywhere] font-extrabold leading-[0.97] tracking-[-0.025em]">
-          <span className="block">{h.a}</span>
-          <span className="block">{h.b}</span>
-          <span className="block font-bold italic"><span className="bg-[linear-gradient(transparent_60%,var(--color-gold)_60%,var(--color-gold)_92%,transparent_92%)] px-1 dark:bg-none dark:text-gold">{h.c}</span></span>
-        </h1>
-        <div className="lg:pr-20 lg:pt-4">
-          <p className="max-w-lg text-lg font-light leading-relaxed text-muted sm:text-xl">{h.lead}</p>
-          <div className="mt-8 flex flex-wrap items-center gap-4">
-            <IconStar className="hidden h-9 w-9 sm:block" />
-            <LinkButton href={href(locale, "register")} arrow>{h.primary}</LinkButton>
-            <LinkButton href={href(locale, "howItWorks")} variant="outline">{h.secondary}</LinkButton>
+      <div className="container-x relative pt-12 sm:pt-16 lg:pt-20">
+        <div className="grid gap-10 lg:grid-cols-[1.25fr_1fr] lg:items-start lg:gap-8">
+          <h1 className="text-[clamp(2.35rem,7.4vw,6rem)] font-extrabold leading-[0.97] tracking-[-0.025em]">
+            <TypedHeadline lines={[h.a, h.b, h.c]} />
+          </h1>
+          <div className="fade-up lg:pr-20 lg:pt-4" style={{ "--d": "0.9s" } as CSSProperties}>
+            <p className="max-w-lg text-lg font-light leading-relaxed text-muted sm:text-xl">{h.lead}</p>
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <IconStar className="hidden h-9 w-9 sm:block" />
+              <LinkButton href={href(locale, "register")} arrow>{h.primary}</LinkButton>
+              <LinkButton href={href(locale, "howItWorks")} variant="outline">{h.secondary}</LinkButton>
+            </div>
           </div>
         </div>
-        <ol className="flex flex-wrap gap-3 lg:col-span-2 lg:mt-4" aria-label="Verify, Match, Deliver, Repeat">
+
+        <ol className="fade-up mt-10 flex flex-wrap gap-3" style={{ "--d": "1.1s" } as CSSProperties} aria-label="Verify, Match, Deliver, Repeat">
           {d.home.cycle.map((c, i) => (
             <li key={c} className="flex items-center gap-2.5 rounded-full border border-line bg-surface/80 py-2 pl-2 pr-5 text-[15px] font-semibold backdrop-blur">
               <span className="grid h-7 w-7 place-items-center rounded-full bg-gold text-xs font-extrabold">{i + 1}</span>
@@ -37,6 +41,21 @@ export function Hero({ locale, d }: { locale: Locale; d: Dict }) {
             </li>
           ))}
         </ol>
+
+        {/* Encore containers – rise into view, with a soft glow so the dark container stays visible in dark mode */}
+        <div className="relative mx-auto mt-6 w-full max-w-[1120px] sm:mt-2">
+          <div aria-hidden className="absolute inset-x-[8%] bottom-[6%] h-[55%] rounded-[50%] bg-gold/25 blur-3xl dark:bg-gold/20" />
+          <div aria-hidden className="absolute inset-x-[18%] bottom-0 h-[22%] rounded-[50%] bg-char/25 blur-2xl dark:bg-black/60" />
+          <Image
+            src="/hero/encore-containers.webp"
+            alt={h.imageAlt}
+            width={1774}
+            height={887}
+            priority
+            sizes="(min-width: 1200px) 1120px, 100vw"
+            className="rise relative h-auto w-full dark:drop-shadow-[0_0_28px_rgba(255,188,13,0.22)]"
+          />
+        </div>
       </div>
     </section>
   );

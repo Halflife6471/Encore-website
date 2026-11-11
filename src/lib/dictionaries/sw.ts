@@ -55,6 +55,11 @@ export const sw: Dict = {
       lead: "Unganisha wasafirishaji waliothibitishwa na mizigo halisi katika njia kuu za biashara Afrika. Ankara moja, jukwaa moja — kila kampuni na lori hukaguliwa na watu, si programu pekee.",
       primary: "Anza Sasa",
       secondary: "Jinsi inavyofanya kazi",
+      imageAlt: "Makontena mawili ya Encore Holdings",
+    },
+    partners: {
+      eyebrow: "Washirika na vyama vyetu",
+      title: "Washirika na vyama tunavyofanya navyo kazi",
     },
     cycle: ["Thibitisha", "Linganisha", "Fikisha", "Rudia"],
     audiences: {

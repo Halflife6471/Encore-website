@@ -56,6 +56,11 @@ export const en = {
       lead: "Connect verified transporters with genuine cargo demand across Africa's trade corridors. One invoice, one platform — with every company and truck checked by people, not just software.",
       primary: "Get Started",
       secondary: "How it works",
+      imageAlt: "Two Encore Holdings shipping containers",
+    },
+    partners: {
+      eyebrow: "Our partners & associations",
+      title: "Partners and associations we work with",
     },
     cycle: ["Verify", "Match", "Deliver", "Repeat"],
     audiences: {

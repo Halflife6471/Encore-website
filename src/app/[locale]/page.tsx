@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { PartnersMarquee } from "@/components/PartnersMarquee";
 import { Audiences, CorridorsTeaser, FinalCta, Hero, Lifecycle, PartnerStrip, Pillars, VerificationExplainer } from "@/components/home-sections";
 import { getDict, isLocale } from "@/lib/i18n";
 import { pageMeta } from "@/lib/seo";
@@ -18,6 +19,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   return (
     <>
       <Hero locale={locale} d={d} />
+      <PartnersMarquee eyebrow={d.home.partners.eyebrow} title={d.home.partners.title} />
       <Audiences locale={locale} d={d} />
       <Lifecycle locale={locale} d={d} />
       <Pillars d={d} />
