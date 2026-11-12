@@ -70,6 +70,16 @@ describe("registration trigger – SRS §5.1, §5.3, §5.6", () => {
     expect(a).toEqual(["account_created", "contact_verified"]);
   });
 
+  it("instant sign-up (email confirmation off): signs in as 'limited' immediately, still never verified, and sees no private marketplace data", async () => {
+    const id = await signup("instant@example.com", { full_name: "Instant User", account_type: "transporter", business_name: "Instant Haulage Ltd", phone: "+255700000555" }, true);
+    const p = (await db.query<any>("select role,status from public.profiles where id=$1", [id])).rows[0];
+    expect(p).toEqual({ role: "transporter", status: "limited" });
+    const co = (await db.query<any>("select verification_status from public.transporter_companies where owner_profile_id=$1", [id])).rows[0];
+    expect(co.verification_status).toBe("unverified");
+    expect(await asUser(id, async () => (await db.query("select * from public.cargo_request_private")).rows.length)).toBe(0);
+    expect(await asUser(id, async () => (await db.query("select 1 from public.cargo_requests")).rows.length)).toBe(20); // public listings still visible
+  });
+
   it("records a referral with a 60-day window, but only for valid active codes", async () => {
     const partner = await signup("partner@example.com", { full_name: "Partner One", account_type: "cargo_owner" });
     await db.query("insert into public.referral_codes (code, partner_profile_id) values ('ENC-AB12', $1), ('ENC-OLD1', $1)", [partner]);

@@ -60,7 +60,7 @@ export async function registerAction(_prev: ActionState, fd: FormData): Promise<
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signUp({
+  const { data: signUp, error } = await supabase.auth.signUp({
     email: v.email,
     password: v.password,
     options: {
@@ -91,7 +91,15 @@ export async function registerAction(_prev: ActionState, fd: FormData): Promise<
     console.error("[register] signUp failed", { status: (error as { status?: number }).status, code });
     return { error: "generic", values };
   }
-  // Supabase returns success for already-registered emails (no enumeration): we do the same.
+  // Email confirmation is switched off in the project: Supabase has already signed the new customer in.
+  // Take them straight into their account, where a "Successfully registered as …" message is shown.
+  if (signUp.session) {
+    (await cookies()).delete(SESSION_ONLY_COOKIE); // keep them signed in on this device
+    if (adminConfigured() && signUp.user) await audit("login", { actorId: signUp.user.id, metadata: { via: "register", ip } });
+    redirect(`${href(v.locale, "app")}?welcome=1`);
+  }
+
+  // Confirmation is on: no session yet. Supabase returns success for already-registered emails (no enumeration): we do the same.
   return { ok: true, email: v.email, values };
 }
 

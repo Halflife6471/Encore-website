@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { ResendForm } from "@/components/forms/ResendForm";
-import { IconCheck, PageHero, Section, StatusChip } from "@/components/ui";
+import { IconCheck, LinkButton, PageHero, Section, StatusChip } from "@/components/ui";
 import { logoutAction } from "@/lib/actions/auth";
 import { getDict, isLocale } from "@/lib/i18n";
 import { href } from "@/lib/routes";
@@ -11,7 +11,7 @@ import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic"; // always per-user, never cached
 
-type P = { params: Promise<{ locale: string }> };
+type P = { params: Promise<{ locale: string }>; searchParams: Promise<{ welcome?: string }> };
 export async function generateMetadata({ params }: P): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
@@ -27,8 +27,9 @@ type StepState = "done" | "next" | "soon";
  * session, so Row-Level Security decides what they can see. Verification chips are rendered
  * strictly from database values – "Verified" can only appear if a human set it (SRS §5.6).
  */
-export default async function Workspace({ params }: P) {
+export default async function Workspace({ params, searchParams }: P) {
   const { locale } = await params;
+  const { welcome } = await searchParams;
   if (!isLocale(locale)) notFound();
   const d = await getDict(locale);
   const t = d.dashboard;
@@ -82,6 +83,7 @@ export default async function Workspace({ params }: P) {
   return (
     <>
       <PageHero title={`${t.welcome}${profile.full_name ? `, ${profile.full_name.split(" ")[0]}` : ""}`} lead={isStaff ? t.staffText : undefined}>
+        {!isStaff && <LinkButton href={href(locale, "marketplace")} variant="gold" className="btn-sm" arrow>{t.browse}</LinkButton>}
         <form action={logoutAction}>
           <input type="hidden" name="locale" value={locale} />
           <button type="submit" className="btn btn-outline btn-sm">{t.signOut}</button>
@@ -89,6 +91,18 @@ export default async function Workspace({ params }: P) {
       </PageHero>
 
       <Section>
+        {welcome && !isStaff && (
+          <div role="status" className="mb-6 flex flex-wrap items-center gap-4 rounded-3xl border border-goldline bg-goldsoft p-5 sm:p-6">
+            <span className="grid h-12 w-12 flex-none place-items-center rounded-full bg-gold"><IconCheck className="h-6 w-6" /></span>
+            <div className="min-w-0 flex-1">
+              <p className="text-xl font-bold">
+                {t.registeredAs.replace("{role}", t.roles[profile.role as keyof typeof t.roles] ?? profile.role)}
+                {company ? ` · ${company}` : ""}
+              </p>
+              <p className="mt-1 text-muted">{t.registeredText}</p>
+            </div>
+          </div>
+        )}
         <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
           <div className="card space-y-5">
             <div>

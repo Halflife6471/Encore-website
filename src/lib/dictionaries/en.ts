@@ -787,6 +787,9 @@ export const en = {
     role: "Account type",
     roles: { cargo_owner: "Cargo Owner", transporter: "Transporter", driver: "Driver", affiliate: "Affiliate", broker: "Broker", staff: "Staff" },
     company: "Company",
+    registeredAs: "Successfully registered as {role}",
+    registeredText: "You are signed in. Browse loads and trucks now. Our team will verify your details to unlock company contacts.",
+    browse: "Browse the marketplace",
     notConfigured: "The account service is not configured yet.",
   },
 } as const;

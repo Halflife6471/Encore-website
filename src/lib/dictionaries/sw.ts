@@ -786,6 +786,9 @@ export const sw: Dict = {
     role: "Aina ya akaunti",
     roles: { cargo_owner: "Mwenye Mzigo", transporter: "Msafirishaji", driver: "Dereva", affiliate: "Mshirika", broker: "Dalali", staff: "Mfanyakazi" },
     company: "Kampuni",
+    registeredAs: "Umesajiliwa kikamilifu kama {role}",
+    registeredText: "Umeingia kwenye akaunti yako. Tazama mizigo na malori sasa. Timu yetu itathibitisha taarifa zako ili kufungua mawasiliano ya kampuni.",
+    browse: "Tazama soko",
     notConfigured: "Huduma ya akaunti bado haijasanidiwa.",
   },
 };
