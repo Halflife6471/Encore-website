@@ -60,6 +60,7 @@ export function Header({ locale, nav }: { locale: Locale; nav: Dict["nav"] }) {
     `flex items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-2.5 text-[15px] font-medium transition ${on ? "bg-surface text-fg shadow-[0_1px_4px_rgba(29,29,27,.12)]" : "text-muted hover:bg-surface/70 hover:text-fg"}`;
 
   const menuLinks: { key: RouteKey; label: string }[] = [
+    { key: "marketplace", label: nav.marketplace },
     { key: "howItWorks", label: nav.howItWorks },
     { key: "cargoOwners", label: nav.cargoOwners },
     { key: "transporters", label: nav.transporters },
@@ -98,6 +99,7 @@ export function Header({ locale, nav }: { locale: Locale; nav: Dict["nav"] }) {
                 </div>
               </div>
             </div>
+            <Link href={href(locale, "marketplace")} className={pill(active("marketplace"))}>{nav.marketplace}</Link>
             <Link href={href(locale, "corridors")} className={pill(active("corridors"))}>{nav.corridors}</Link>
             <Link href={href(locale, "partners")} className={pill(active("partners"))}>{nav.partners}</Link>
             <Link href={href(locale, "about")} className={pill(active("about"))}>{nav.about}</Link>

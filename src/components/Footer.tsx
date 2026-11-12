@@ -11,6 +11,7 @@ export function Footer({ locale, d }: { locale: Locale; d: Dict }) {
     {
       title: d.footer.explore,
       links: [
+        { key: "marketplace", label: d.nav.marketplace },
         { key: "howItWorks", label: d.nav.howItWorks },
         { key: "corridors", label: d.nav.corridors },
         { key: "about", label: d.nav.about },

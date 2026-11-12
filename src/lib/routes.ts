@@ -12,6 +12,7 @@ export const routeSlugs = {
   transporters: { en: "transporters", sw: "wasafirishaji" },
   drivers: { en: "drivers", sw: "madereva" },
   corridors: { en: "corridors", sw: "njia-za-usafirishaji" },
+  marketplace: { en: "marketplace", sw: "soko" },
   partners: { en: "partners", sw: "washirika" },
   contact: { en: "contact", sw: "wasiliana-nasi" },
   faq: { en: "faq", sw: "maswali" },

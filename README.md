@@ -15,6 +15,12 @@ Implements **ENCORE-SRD-WEB-001** (`docs/Encore-Public-Website-SRD.pdf`), derive
 - Database migration with RLS and a privilege-escalation guard (`supabase/migrations`).
 - Commercial rules engine (`src/lib/commercial.ts`): 5% / USD 300 minimum, managed margin, partner tiers, minimum-retention protection, attribution window, reward eligibility. **Not shown publicly** (SRD WEB-013).
 
+### Marketplace tab (sample data)
+- `/en/marketplace` · `/sw/soko`: mixed feed of **loads and trucks** with tabs (All / Loads / Trucks), search, filters (corridor, vehicle type, weight/payload) and sorting.
+- Each listing opens a full detail view: route + border crossings, cargo, weight, schedule, vehicle requirements, documents, indicative budget/rate, owner/transporter profile, and **matching** loads ↔ trucks.
+- Data is **illustrative only** (`src/lib/marketplace.ts`, clearly labelled "Sample"); shapes mirror the future `cargo_requests` / `trucks` tables so real rows can replace it in Step 2.
+- Contact details and quoting are sign-in gated; commercial margins are never shown (SRD WEB-013).
+
 ### Next steps
 - Step 2: company profile + truck registration + private document upload (transporter), cargo-owner profile and cargo requests.
 - Step 3: staff verification queue, quotations, bookings, central invoicing and settlement.
