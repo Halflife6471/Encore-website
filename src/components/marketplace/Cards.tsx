@@ -9,8 +9,8 @@ import { TruckArt } from "./TruckArt";
 import { dateRange, km, makeDate, posted, tonnes, tpl, usd, type MP } from "./fmt";
 
 const Photo = ({ src }: { src: string }) => (
-  <div className="relative h-40 w-full bg-soft">
-    <Image src={src} alt="" fill sizes="(min-width:1024px) 400px, 100vw" className="object-cover" />
+  <div className="relative aspect-[2/1] w-full bg-soft">
+    <Image src={src} alt="" fill sizes="(min-width:1024px) 400px, 100vw" className="object-cover object-[50%_35%]" />
   </div>
 );
 

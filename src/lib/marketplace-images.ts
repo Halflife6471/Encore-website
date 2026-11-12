@@ -9,5 +9,11 @@ import type { CargoType, VehicleType } from "./marketplace";
  *
  * Recommended: landscape, about 1200 x 800 px, JPEG/WebP, under 250 KB.
  */
-export const TRUCK_PHOTOS: Partial<Record<VehicleType, string>> = {};
+export const TRUCK_PHOTOS: Partial<Record<VehicleType, string>> = {
+  flatbed: "/marketplace/trucks/flatbed.jpg", // placeholder: machinery on a flat trailer; replace with a dedicated flatbed photo
+  curtainside: "/marketplace/trucks/curtainside.jpg",
+  lowbed: "/marketplace/trucks/lowbed.jpg",
+  box: "/marketplace/trucks/box.jpg",
+  bulk: "/marketplace/trucks/bulk.jpg",
+};
 export const CARGO_PHOTOS: Partial<Record<CargoType, string>> = {};

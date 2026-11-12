@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, type ReactNode } from "react";
 import {
@@ -7,10 +8,22 @@ import {
   type Listing, type Load, type Tier, type Truck,
 } from "@/lib/marketplace";
 import type { Locale } from "@/lib/i18n-config";
+import { TRUCK_PHOTOS } from "@/lib/marketplace-images";
 import { IconArrow, IconCheck, IconChat, IconClose, IconLock, IconMail, IconPhone, StatusChip } from "../ui";
 import { IconAlert, IconInfo, IconSnow } from "./icons";
 import { TruckArt } from "./TruckArt";
 import { dateRange, km, makeDate, posted, tonnes, tpl, usd, type MP } from "./fmt";
+
+/** Photo of the vehicle type when one is registered, otherwise the built-in illustration. */
+function VehicleImage({ type, className, art }: { type: Truck["type"]; className: string; art: string }) {
+  const src = TRUCK_PHOTOS[type];
+  if (!src) return <TruckArt type={type} className={art} />;
+  return (
+    <span className={`relative block overflow-hidden ${className}`}>
+      <Image src={src} alt="" fill sizes="(min-width:768px) 700px, 100vw" className="object-cover object-[50%_35%]" />
+    </span>
+  );
+}
 
 type Links = { login: string; register: string; app: string; whatsapp: string };
 type Fmt = ReturnType<typeof makeDate>;
@@ -201,7 +214,7 @@ function LoadBody({ l, d, locale, base, tier, links, listings, onSelect }: BodyP
               return (
                 <li key={t.ref}>
                   <button type="button" onClick={() => onSelect(t.ref)} className="flex w-full items-center gap-4 rounded-2xl border border-line bg-surface p-3 text-left transition hover:border-fg">
-                    <TruckArt type={t.type} className="h-12 w-24 flex-none" />
+                    <VehicleImage type={t.type} className="h-14 w-24 flex-none rounded-xl" art="h-12 w-24 flex-none" />
                     <span className="min-w-0 flex-1">
                       <span className="block font-bold">{t.make} · {tonnes(t.payloadT)}</span>
                       <span className="block text-sm text-muted">{t.location.city}, {t.location.cc} · {t.ref}</span>
@@ -227,9 +240,13 @@ function TruckBody({ t, d, locale, base, tier, links, listings, onSelect }: Body
   const loads = matchingLoads(t, listings);
   return (
     <div className="space-y-5">
-      <div className="rounded-2xl bg-gradient-to-b from-soft to-surface px-4 pt-3 sm:px-8">
-        <TruckArt type={t.type} className="mx-auto h-32 w-full max-w-[340px]" />
-      </div>
+      {TRUCK_PHOTOS[t.type] ? (
+        <VehicleImage type={t.type} className="aspect-[2/1] w-full rounded-2xl" art="" />
+      ) : (
+        <div className="rounded-2xl bg-gradient-to-b from-soft to-surface px-4 pt-3 sm:px-8">
+          <TruckArt type={t.type} className="mx-auto h-32 w-full max-w-[340px]" />
+        </div>
+      )}
 
       <Section title={d.detail.specs}>
         <Grid>
