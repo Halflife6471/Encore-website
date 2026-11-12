@@ -2,7 +2,7 @@ import { PGlite } from "@electric-sql/pglite";
 import { readFileSync } from "node:fs";
 import { beforeAll, describe, expect, it } from "vitest";
 
-const migrations = ["20261110000000_public_site_foundation.sql", "20261110000100_move_rls_helpers_to_private_schema.sql", "20261110000200_staff_clear_must_change_password.sql"];
+const migrations = ["20261110000000_public_site_foundation.sql", "20261110000100_move_rls_helpers_to_private_schema.sql", "20261110000200_staff_clear_must_change_password.sql", "20261112000000_marketplace_listings.sql", "20261112000100_seed_sample_marketplace.sql"];
 const sql = migrations.map((f) => readFileSync(new URL(`../supabase/migrations/${f}`, import.meta.url), "utf8")).join("\n");
 let db: PGlite;
 
@@ -12,6 +12,10 @@ async function signup(email: string, meta: Record<string, unknown>, confirmed = 
     [email, JSON.stringify(meta), confirmed ? new Date().toISOString() : null],
   );
   return r.rows[0].id;
+}
+async function asAnon<T>(fn: () => Promise<T>): Promise<T> {
+  await db.exec("set role anon;");
+  try { return await fn(); } finally { await db.exec("reset role;"); }
 }
 async function asUser<T>(id: string, fn: () => Promise<T>): Promise<T> {
   await db.exec(`set role authenticated; select set_config('request.jwt.claim.sub','${id}', false);`);
@@ -153,3 +157,70 @@ describe("staff first-login password rule – SRS §5.2", () => {
   });
 });
 
+
+describe("marketplace visibility – public data open, sensitive data verified-only", () => {
+  it("seeds 20 sample loads and 25 sample trucks, all marked as samples", async () => {
+    const l = (await db.query<any>("select count(*)::int n, bool_and(is_sample) s from public.cargo_requests where status='published'")).rows[0];
+    const t = (await db.query<any>("select count(*)::int n, bool_and(is_sample) s from public.trucks where status='published'")).rows[0];
+    expect(l).toEqual({ n: 20, s: true });
+    expect(t).toEqual({ n: 25, s: true });
+  });
+
+  it("lets signed-out visitors read published listings, prices included", async () => {
+    const rows = await asAnon(async () => (await db.query<any>("select reference, budget_min_usd, budget_max_usd from public.cargo_requests")).rows);
+    expect(rows).toHaveLength(20);
+    expect(rows[0].budget_min_usd).toBeGreaterThan(0);
+    expect(await asAnon(async () => (await db.query<any>("select rate_min_usd_per_km from public.trucks")).rows.length)).toBe(25);
+  });
+
+  it("never exposes company or contact details to signed-out visitors", async () => {
+    await expect(asAnon(() => db.query("select * from public.cargo_request_private"))).rejects.toThrow(/permission denied/);
+    await expect(asAnon(() => db.query("select * from public.truck_private"))).rejects.toThrow(/permission denied/);
+  });
+
+  it("hides unpublished listings from visitors", async () => {
+    await db.query("update public.cargo_requests set status='pending_review' where reference='EN-L-2041'");
+    expect(await asAnon(async () => (await db.query("select 1 from public.cargo_requests where reference='EN-L-2041'")).rows.length)).toBe(0);
+    await db.query("update public.cargo_requests set status='published' where reference='EN-L-2041'");
+  });
+
+  it("keeps private details hidden from registered-but-unverified accounts, and shows them once verified", async () => {
+    const owner = await signup("mk-owner@example.com", { full_name: "Mk Owner", account_type: "cargo_owner" }, true);
+    expect(await asUser(owner, async () => (await db.query("select * from public.cargo_request_private")).rows.length)).toBe(0);
+    expect(await asUser(owner, async () => (await db.query("select * from public.truck_private")).rows.length)).toBe(0);
+    // public data is still visible to them
+    expect(await asUser(owner, async () => (await db.query("select 1 from public.cargo_requests")).rows.length)).toBe(20);
+
+    await db.query("update public.cargo_owners set verification_status='under_review' where profile_id=$1", [owner]);
+    expect(await asUser(owner, async () => (await db.query("select * from public.cargo_request_private")).rows.length)).toBe(0);
+
+    await db.query("update public.cargo_owners set verification_status='verified' where profile_id=$1", [owner]);
+    const priv = await asUser(owner, async () => (await db.query<any>("select company_name, contact_email from public.cargo_request_private")).rows);
+    expect(priv).toHaveLength(20);
+    expect(await asUser(owner, async () => (await db.query("select * from public.truck_private")).rows.length)).toBe(25);
+  });
+
+  it("treats a verified transporter company the same way", async () => {
+    const tr = await signup("mk-trans@example.com", { full_name: "Mk Trans", account_type: "transporter", business_name: "Mk Trans Ltd" }, true);
+    expect(await asUser(tr, async () => (await db.query("select * from public.cargo_request_private")).rows.length)).toBe(0);
+    await db.query("update public.transporter_companies set verification_status='verified' where owner_profile_id=$1", [tr]);
+    expect(await asUser(tr, async () => (await db.query("select * from public.cargo_request_private")).rows.length)).toBe(20);
+  });
+
+  it("does not let customers create, edit or delete listings", async () => {
+    const u = await signup("mk-evil@example.com", { full_name: "Mk Evil", account_type: "cargo_owner" }, true);
+    await expect(asUser(u, () => db.query("update public.cargo_requests set budget_min_usd=1 where reference='EN-L-2041'"))).resolves.toBeDefined();
+    expect((await db.query<any>("select budget_min_usd from public.cargo_requests where reference='EN-L-2041'")).rows[0].budget_min_usd).toBe(3800); // RLS hid the row: nothing changed
+    await expect(asUser(u, () => db.query("delete from public.trucks"))).resolves.toBeDefined();
+    expect((await db.query<any>("select count(*)::int n from public.trucks")).rows[0].n).toBe(25);
+    await expect(asUser(u, () => db.query(`insert into public.cargo_requests (reference,status,corridor,origin_city,origin_country,destination_city,destination_country,distance_km,transit_days_min,transit_days_max,commodity_en,cargo_type,packaging,weight_t,vehicle_type,pickup_from,pickup_to,deliver_by) values ('X-1','published','domestic','A','TZ','B','TZ',10,1,1,'x','general','loose',1,'box',now(),now(),now())`))).rejects.toThrow(/row-level security/);
+  });
+
+  it("lets staff manage listings", async () => {
+    const s = await signup("mk-staff@example.com", { full_name: "Mk Staff", account_type: "cargo_owner" });
+    await db.query("update public.profiles set role='operations_manager', status='active' where id=$1", [s]);
+    await asUser(s, () => db.query("update public.cargo_requests set urgent=true where reference='EN-L-2041'"));
+    expect((await db.query<any>("select urgent from public.cargo_requests where reference='EN-L-2041'")).rows[0].urgent).toBe(true);
+    expect(await asUser(s, async () => (await db.query("select * from public.truck_private")).rows.length)).toBe(25);
+  });
+});

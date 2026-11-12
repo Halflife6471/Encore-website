@@ -5,11 +5,9 @@ import { IconInfo } from "@/components/marketplace/icons";
 import { LinkButton, Section } from "@/components/ui";
 import { getDict, isLocale } from "@/lib/i18n";
 import { href } from "@/lib/routes";
+import { getMarketplace } from "@/lib/marketplace-data";
 import { pageMeta } from "@/lib/seo";
 import { CONTACT } from "@/lib/site";
-
-// Sample dates are day-offsets from "today"; refresh the page hourly so they never look stale.
-export const revalidate = 3600;
 
 type P = { params: Promise<{ locale: string }> };
 export async function generateMetadata({ params }: P): Promise<Metadata> {
@@ -24,8 +22,7 @@ export default async function Marketplace({ params }: P) {
   if (!isLocale(locale)) notFound();
   const d = await getDict(locale);
   const m = d.marketplace;
-  const now = new Date();
-  const base = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  const { listings, tier, base } = await getMarketplace();
 
   return (
     <>
@@ -48,7 +45,9 @@ export default async function Marketplace({ params }: P) {
           d={m}
           locale={locale}
           base={base}
-          links={{ login: href(locale, "login"), register: href(locale, "register"), whatsapp: CONTACT.whatsapp }}
+          listings={listings}
+          tier={tier}
+          links={{ login: href(locale, "login"), register: href(locale, "register"), app: href(locale, "app"), whatsapp: CONTACT.whatsapp }}
         />
       </Section>
 

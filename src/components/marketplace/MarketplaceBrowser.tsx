@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { LISTINGS, perTruckT, type Corridor, type Listing, type VehicleType } from "@/lib/marketplace";
+import { perTruckT, type Corridor, type Listing, type Tier, type VehicleType } from "@/lib/marketplace";
 import type { Locale } from "@/lib/i18n-config";
 import { LoadCard, TruckCard } from "./Cards";
 import { ListingDetail } from "./ListingDetail";
@@ -20,9 +20,9 @@ const vehicleOf = (l: Listing) => (l.kind === "load" ? l.truckType : l.type);
 const soonOf = (l: Listing) => (l.kind === "load" ? l.pickup[0] : l.availIn);
 
 export function MarketplaceBrowser({
-  d, locale, base, links,
+  d, locale, base, links, listings, tier,
 }: {
-  d: MP; locale: Locale; base: number; links: { login: string; register: string; whatsapp: string };
+  d: MP; locale: Locale; base: number; links: { login: string; register: string; app: string; whatsapp: string }; listings: Listing[]; tier: Tier;
 }) {
   const [tab, setTab] = useState<Tab>("all");
   const [q, setQ] = useState("");
@@ -34,8 +34,8 @@ export function MarketplaceBrowser({
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const counts = useMemo(
-    () => ({ all: LISTINGS.length, load: LISTINGS.filter((l) => l.kind === "load").length, truck: LISTINGS.filter((l) => l.kind === "truck").length }),
-    [],
+    () => ({ all: listings.length, load: listings.filter((l) => l.kind === "load").length, truck: listings.filter((l) => l.kind === "truck").length }),
+    [listings],
   );
 
   const results = useMemo(() => {
@@ -43,10 +43,10 @@ export function MarketplaceBrowser({
     const hay = (l: Listing) =>
       (l.kind === "load"
         ? [l.ref, l.origin.city, l.destination.city, l.commodity.en, l.commodity.sw, d.cargoTypes[l.cargoType], d.vehicles[l.truckType]]
-        : [l.ref, l.make, l.location.city, l.transporter.ref, d.vehicles[l.type]]
+        : [l.ref, l.make, l.location.city, d.vehicles[l.type]]
       ).join(" ").toLowerCase();
 
-    const list = LISTINGS.filter((l) => {
+    const list = listings.filter((l) => {
       if (tab !== "all" && l.kind !== tab) return false;
       if (needle && !hay(l).includes(needle)) return false;
       if (corridor && !(l.kind === "load" ? l.corridor === corridor : l.routes.includes(corridor))) return false;
@@ -65,12 +65,12 @@ export function MarketplaceBrowser({
       heaviest: (a, b) => weightOf(b) - weightOf(a),
     };
     return [...list].sort(cmp[sort]);
-  }, [tab, q, corridor, vehicle, weight, sort, d]);
+  }, [listings, tab, q, corridor, vehicle, weight, sort, d]);
 
   const active = (corridor ? 1 : 0) + (vehicle ? 1 : 0) + (weight !== "any" ? 1 : 0) + (q ? 1 : 0);
   const reset = () => { setQ(""); setCorridor(""); setVehicle(""); setWeight("any"); };
   const close = useCallback(() => setOpen(null), []);
-  const selected = open ? LISTINGS.find((l) => l.ref === open) : undefined;
+  const selected = open ? listings.find((l) => l.ref === open) : undefined;
 
   const tabBtn = (key: Tab, label: string, n: number) => (
     <button
@@ -168,7 +168,7 @@ export function MarketplaceBrowser({
         </ul>
       )}
 
-      {selected && <ListingDetail listing={selected} d={d} locale={locale} base={base} links={links} onClose={close} onSelect={setOpen} />}
+      {selected && <ListingDetail listing={selected} listings={listings} d={d} locale={locale} base={base} tier={tier} links={links} onClose={close} onSelect={setOpen} />}
     </div>
   );
 }

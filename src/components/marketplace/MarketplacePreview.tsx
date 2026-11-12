@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import Link from "next/link";
 import type { Dict } from "@/lib/dictionaries/en";
 import type { Locale } from "@/lib/i18n-config";
-import { LISTINGS, type Listing } from "@/lib/marketplace";
+import type { Listing, Tier } from "@/lib/marketplace";
 import { href } from "@/lib/routes";
 import { CONTACT } from "@/lib/site";
 import { IconArrow, Section, SectionHead } from "../ui";
@@ -13,17 +13,21 @@ import { ListingDetail } from "./ListingDetail";
 
 const FEATURED_LOADS = ["EN-L-2041", "EN-L-2049", "EN-L-2053"];
 const FEATURED_TRUCKS = ["EN-T-1108", "EN-T-1110", "EN-T-1112"];
-const pick = (refs: string[]) => refs.map((r) => LISTINGS.find((l) => l.ref === r)).filter((l): l is Listing => !!l);
+/** Featured refs first; if they are not in the data (e.g. real listings replaced the samples), fall back to the newest three of that kind. */
+function pick(all: Listing[], kind: "load" | "truck", refs: string[]): Listing[] {
+  const featured = refs.map((r) => all.find((l) => l.ref === r)).filter((l): l is Listing => !!l);
+  return featured.length === 3 ? featured : all.filter((l) => l.kind === kind).slice(0, 3);
+}
 
 /** Homepage teaser: three sample loads and three sample trucks, opening the same detail view as /marketplace. */
-export function MarketplacePreview({ locale, d, base }: { locale: Locale; d: Dict; base: number }) {
+export function MarketplacePreview({ locale, d, base, listings, tier }: { locale: Locale; d: Dict; base: number; listings: Listing[]; tier: Tier }) {
   const m = d.marketplace;
   const h = d.home.marketplace;
   const [tab, setTab] = useState<"loads" | "trucks">("loads");
   const [open, setOpen] = useState<string | null>(null);
   const close = useCallback(() => setOpen(null), []);
-  const items = pick(tab === "loads" ? FEATURED_LOADS : FEATURED_TRUCKS);
-  const selected = open ? LISTINGS.find((l) => l.ref === open) : undefined;
+  const items = tab === "loads" ? pick(listings, "load", FEATURED_LOADS) : pick(listings, "truck", FEATURED_TRUCKS);
+  const selected = open ? listings.find((l) => l.ref === open) : undefined;
   const all = href(locale, "marketplace");
 
   const tabBtn = (key: "loads" | "trucks", label: string) => (
@@ -59,7 +63,7 @@ export function MarketplacePreview({ locale, d, base }: { locale: Locale; d: Dic
       </div>
 
       {selected && (
-        <ListingDetail listing={selected} d={m} locale={locale} base={base} links={{ login: href(locale, "login"), register: href(locale, "register"), whatsapp: CONTACT.whatsapp }} onClose={close} onSelect={setOpen} />
+        <ListingDetail listing={selected} listings={listings} d={m} locale={locale} base={base} tier={tier} links={{ login: href(locale, "login"), register: href(locale, "register"), app: href(locale, "app"), whatsapp: CONTACT.whatsapp }} onClose={close} onSelect={setOpen} />
       )}
     </Section>
   );

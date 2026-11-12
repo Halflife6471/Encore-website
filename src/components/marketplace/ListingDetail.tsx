@@ -4,16 +4,15 @@ import Link from "next/link";
 import { useEffect, useRef, type ReactNode } from "react";
 import {
   matchingLoads, matchingTrucks, missingFeatures, perTruckT,
-  type Listing, type Load, type Truck,
+  type Listing, type Load, type Tier, type Truck,
 } from "@/lib/marketplace";
 import type { Locale } from "@/lib/i18n-config";
-import { IconArrow, IconCheck, IconChat, IconClose, StatusChip } from "../ui";
-import { VerificationChip } from "./Cards";
-import { IconAlert, IconInfo, IconSnow, IconStarSolid } from "./icons";
+import { IconArrow, IconCheck, IconChat, IconClose, IconLock, IconMail, IconPhone, StatusChip } from "../ui";
+import { IconAlert, IconInfo, IconSnow } from "./icons";
 import { TruckArt } from "./TruckArt";
 import { dateRange, km, makeDate, posted, tonnes, tpl, usd, type MP } from "./fmt";
 
-type Links = { login: string; register: string; whatsapp: string };
+type Links = { login: string; register: string; app: string; whatsapp: string };
 type Fmt = ReturnType<typeof makeDate>;
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -32,23 +31,72 @@ function Row({ k, children, wide = false }: { k: string; children: ReactNode; wi
   return (
     <div className={wide ? "col-span-2" : ""}>
       <dt className="text-xs font-medium text-muted">{k}</dt>
-      <dd className="mt-0.5 font-semibold leading-snug">{children}</dd>
+      <dd className="mt-0.5 break-words font-semibold leading-snug">{children}</dd>
     </div>
   );
 }
 
-function Checks({ items, have }: { items: string[]; have?: boolean[] }) {
+function Checks({ items }: { items: string[] }) {
   return (
     <ul className="grid gap-2 sm:grid-cols-2">
-      {items.map((t, i) => (
+      {items.map((t) => (
         <li key={t} className="flex items-start gap-2.5 text-[15px]">
-          <span className={`mt-0.5 grid h-5 w-5 flex-none place-items-center rounded-full ${have && !have[i] ? "bg-line text-muted" : "bg-gold text-ongold"}`}>
+          <span className="mt-0.5 grid h-5 w-5 flex-none place-items-center rounded-full bg-gold text-ongold">
             <IconCheck className="h-3 w-3" />
           </span>
           {t}
         </li>
       ))}
     </ul>
+  );
+}
+
+/** Company identity, contact details and exact addresses: shown to verified accounts only. */
+function Access({ l, d, tier, links }: { l: Listing; d: MP; tier: Tier; links: Links }) {
+  const x = d.detail;
+  const priv = l.priv;
+  if (tier === "verified" && priv) {
+    const tel = `tel:${priv.contact.phone.replace(/\s/g, "")}`;
+    return (
+      <Section title={x.access}>
+        <Grid>
+          <Row k={x.company} wide>{priv.company}</Row>
+          <Row k={x.contactPerson}>{priv.contact.name}</Row>
+          <Row k={x.phone}><a href={tel} className="link-gold inline-flex items-center gap-1.5"><IconPhone className="h-4 w-4" />{priv.contact.phone}</a></Row>
+          <Row k={x.email} wide><a href={`mailto:${priv.contact.email}`} className="link-gold inline-flex items-center gap-1.5 break-all"><IconMail className="h-4 w-4 flex-none" />{priv.contact.email}</a></Row>
+          {l.kind === "load" && "pickupAddress" in priv ? (
+            <>
+              <Row k={x.pickupAddress}>{priv.pickupAddress}</Row>
+              <Row k={x.deliveryAddress}>{priv.deliveryAddress}</Row>
+            </>
+          ) : (
+            "baseAddress" in priv && <Row k={x.baseAddress} wide>{priv.baseAddress}</Row>
+          )}
+        </Grid>
+        {l.isSample && <p className="mt-3 flex gap-2 text-sm text-muted"><IconInfo className="mt-0.5 h-4 w-4 flex-none" />{x.unlockedNote}</p>}
+      </Section>
+    );
+  }
+  return (
+    <Section title={x.access}>
+      <div className="flex gap-3.5 rounded-2xl border border-dashed border-g2 bg-soft p-4 sm:p-5">
+        <span className="grid h-10 w-10 flex-none place-items-center rounded-full bg-ink text-gold"><IconLock className="h-5 w-5" /></span>
+        <div className="min-w-0">
+          <p className="font-bold">{x.lockedTitle}</p>
+          <p className="mt-1 text-[15px] text-muted">{tier === "registered" ? x.lockedRegistered : x.lockedGuest}</p>
+          <div className="mt-3 flex flex-wrap gap-2.5">
+            {tier === "registered" ? (
+              <Link href={links.app} className="btn btn-gold btn-sm">{x.completeVerification}</Link>
+            ) : (
+              <>
+                <Link href={links.login} className="btn btn-gold btn-sm">{x.signIn}</Link>
+                <Link href={links.register} className="btn btn-outline btn-sm">{x.register}</Link>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </Section>
   );
 }
 
@@ -82,10 +130,12 @@ function RouteLine({ l, d }: { l: Load; d: MP }) {
   );
 }
 
+type BodyProps = { d: MP; locale: Locale; base: number; tier: Tier; links: Links; listings: Listing[]; onSelect: (r: string) => void };
+
 /* ------------------------------------------------------------- Load body */
-function LoadBody({ l, d, locale, base, onSelect }: { l: Load; d: MP; locale: Locale; base: number; onSelect: (r: string) => void }) {
+function LoadBody({ l, d, locale, base, tier, links, listings, onSelect }: BodyProps & { l: Load }) {
   const fmt: Fmt = makeDate(locale);
-  const trucks = matchingTrucks(l);
+  const trucks = matchingTrucks(l, listings);
   return (
     <div className="space-y-5">
       <RouteLine l={l} d={d} />
@@ -102,6 +152,7 @@ function LoadBody({ l, d, locale, base, onSelect }: { l: Load; d: MP; locale: Lo
           {l.piece && <Row k={d.detail.piece}>{l.piece}</Row>}
           {l.temp && <Row k={d.detail.temp}><span className="inline-flex items-center gap-1.5"><IconSnow className="h-4 w-4" />{l.temp[0]} – {l.temp[1]} °C</span></Row>}
           {l.hazmat && <Row k={d.detail.hazmat}><span className="inline-flex items-center gap-1.5 text-danger"><IconAlert className="h-4 w-4" />{l.hazmat}</span></Row>}
+          <Row k={d.detail.sector}>{d.sectors[l.sector]}</Row>
         </Grid>
         {l.note && <p className="mt-4 flex gap-2.5 rounded-xl bg-goldsoft p-3.5 text-sm"><IconInfo className="mt-0.5 h-4 w-4 flex-none" /><span><b>{d.detail.note}: </b>{l.note[locale]}</span></p>}
       </Section>
@@ -138,14 +189,7 @@ function LoadBody({ l, d, locale, base, onSelect }: { l: Load; d: MP; locale: Lo
         </Grid>
       </Section>
 
-      <Section title={d.detail.owner}>
-        <Grid>
-          <Row k={d.detail.owner}><span className="inline-flex flex-wrap items-center gap-2">{l.owner.city}, {d.countries[l.owner.cc]} <VerificationChip v={l.owner.verification} d={d} /></span></Row>
-          <Row k={d.detail.ownerSector}>{d.sectors[l.owner.sector]}</Row>
-          <Row k={d.detail.memberSince}>{l.owner.since}</Row>
-          <Row k={d.detail.shipments}>{l.owner.shipments}</Row>
-        </Grid>
-      </Section>
+      <Access l={l} d={d} tier={tier} links={links} />
 
       <Section title={d.detail.matchTrucks}>
         {trucks.length === 0 ? (
@@ -178,9 +222,9 @@ function LoadBody({ l, d, locale, base, onSelect }: { l: Load; d: MP; locale: Lo
 }
 
 /* ------------------------------------------------------------ Truck body */
-function TruckBody({ t, d, locale, base, onSelect }: { t: Truck; d: MP; locale: Locale; base: number; onSelect: (r: string) => void }) {
+function TruckBody({ t, d, locale, base, tier, links, listings, onSelect }: BodyProps & { t: Truck }) {
   const fmt: Fmt = makeDate(locale);
-  const loads = matchingLoads(t);
+  const loads = matchingLoads(t, listings);
   return (
     <div className="space-y-5">
       <div className="rounded-2xl bg-gradient-to-b from-soft to-surface px-4 pt-3 sm:px-8">
@@ -227,17 +271,7 @@ function TruckBody({ t, d, locale, base, onSelect }: { t: Truck; d: MP; locale: 
         </Grid>
       </Section>
 
-      <Section title={d.detail.transporter}>
-        <Grid>
-          <Row k={d.detail.reference}><span className="inline-flex flex-wrap items-center gap-2">{t.transporter.ref} <VerificationChip v={t.transporter.verification} d={d} /></span></Row>
-          <Row k={d.detail.currentLocation}>{t.transporter.city}, {d.countries[t.transporter.cc]}</Row>
-          <Row k={d.detail.rating}><span className="inline-flex items-center gap-1"><IconStarSolid className="h-4 w-4 text-gold" />{t.transporter.rating.toFixed(1)} / 5</span></Row>
-          <Row k={d.detail.completedTrips}>{t.transporter.trips.toLocaleString("en-US")}</Row>
-          <Row k={d.detail.fleetSize}>{t.transporter.fleet}</Row>
-          <Row k={d.detail.yearsOperating}>{t.transporter.years}</Row>
-          <Row k={d.detail.replyTime}>{tpl(d.detail.replyValue, { n: t.transporter.replyHours })}</Row>
-        </Grid>
-      </Section>
+      <Access l={t} d={d} tier={tier} links={links} />
 
       <Section title={d.detail.matchLoads}>
         {loads.length === 0 ? (
@@ -265,9 +299,9 @@ function TruckBody({ t, d, locale, base, onSelect }: { t: Truck; d: MP; locale: 
 
 /* ----------------------------------------------------------------- Modal */
 export function ListingDetail({
-  listing, d, locale, base, links, onClose, onSelect,
+  listing, listings, d, locale, base, tier, links, onClose, onSelect,
 }: {
-  listing: Listing; d: MP; locale: Locale; base: number; links: Links; onClose: () => void; onSelect: (ref: string) => void;
+  listing: Listing; listings: Listing[]; d: MP; locale: Locale; base: number; tier: Tier; links: Links; onClose: () => void; onSelect: (ref: string) => void;
 }) {
   const closeRef = useRef<HTMLButtonElement>(null);
   const scroller = useRef<HTMLDivElement>(null);
@@ -297,6 +331,7 @@ export function ListingDetail({
     ? tpl(d.detail.waLoad, { ref: listing.ref, from: listing.origin.city, to: listing.destination.city })
     : tpl(d.detail.waTruck, { ref: listing.ref, type: d.vehicles[listing.type], loc: listing.location.city });
   const waHref = `https://wa.me/${links.whatsapp}?text=${encodeURIComponent(wa)}`;
+  const body: BodyProps = { d, locale, base, tier, links, listings, onSelect };
 
   return (
     <div className="fixed inset-0 z-[60] flex items-end justify-center sm:items-center sm:p-6" role="dialog" aria-modal="true" aria-labelledby="mp-title">
@@ -318,20 +353,28 @@ export function ListingDetail({
         </header>
 
         <div ref={scroller} className="flex-1 overflow-y-auto overscroll-contain px-5 py-5 sm:px-7">
-          <p className="mb-5 flex items-center gap-2 rounded-xl bg-soft px-3.5 py-2.5 text-sm font-medium text-muted">
-            <IconInfo className="h-4 w-4 flex-none" /> {d.detail.sampleNote}
-          </p>
-          {isLoad
-            ? <LoadBody l={listing} d={d} locale={locale} base={base} onSelect={onSelect} />
-            : <TruckBody t={listing} d={d} locale={locale} base={base} onSelect={onSelect} />}
+          {listing.isSample && (
+            <p className="mb-5 flex items-center gap-2 rounded-xl bg-soft px-3.5 py-2.5 text-sm font-medium text-muted">
+              <IconInfo className="h-4 w-4 flex-none" /> {d.detail.sampleNote}
+            </p>
+          )}
+          {isLoad ? <LoadBody l={listing} {...body} /> : <TruckBody t={listing} {...body} />}
         </div>
 
         <footer className="border-t border-line bg-surface px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-7">
-          <p className="mb-3 hidden text-sm text-muted sm:block"><b className="text-fg">{d.detail.guestTitle}.</b> {isLoad ? d.detail.guestLoad : d.detail.guestTruck}</p>
+          {tier === "verified" && <p className="mb-3 hidden text-sm text-muted sm:block">{d.detail.verifiedNote}</p>}
+          {tier === "guest" && <p className="mb-3 hidden text-sm text-muted sm:block"><b className="text-fg">{d.detail.guestTitle}.</b> {isLoad ? d.detail.guestLoad : d.detail.guestTruck}</p>}
           <div className="grid grid-cols-2 gap-2.5 sm:flex sm:flex-wrap">
-            <Link href={links.login} className="btn btn-gold btn-sm col-span-2 sm:col-auto">{isLoad ? d.detail.quote : d.detail.request}</Link>
-            <Link href={links.register} className="btn btn-outline btn-sm !px-3 sm:!px-5">{d.detail.register}</Link>
-            <a href={waHref} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-sm !px-3 sm:!px-5">
+            {tier === "guest" && (
+              <>
+                <Link href={links.login} className="btn btn-gold btn-sm col-span-2 sm:col-auto">{isLoad ? d.detail.quote : d.detail.request}</Link>
+                <Link href={links.register} className="btn btn-outline btn-sm !px-3 sm:!px-5">{d.detail.register}</Link>
+              </>
+            )}
+            {tier === "registered" && (
+              <Link href={links.app} className="btn btn-gold btn-sm col-span-2 sm:col-auto">{d.detail.completeVerification}</Link>
+            )}
+            <a href={waHref} target="_blank" rel="noopener noreferrer" className={`btn btn-outline btn-sm !px-3 sm:!px-5 ${tier === "verified" ? "col-span-2 sm:col-auto" : ""}`}>
               <IconChat className="h-4 w-4" /> {d.detail.whatsapp}
             </a>
           </div>

@@ -1,22 +1,20 @@
+import Image from "next/image";
 import type { ReactNode } from "react";
-import { perTruckT, type Load, type Truck, type Verification } from "@/lib/marketplace";
+import { perTruckT, type Load, type Truck } from "@/lib/marketplace";
+import { CARGO_PHOTOS, TRUCK_PHOTOS } from "@/lib/marketplace-images";
 import type { Locale } from "@/lib/i18n-config";
-import { IconCheck, IconArrow, StatusChip } from "../ui";
-import { IconCalendar, IconPin, IconScale, IconShield, IconStarSolid } from "./icons";
+import { IconArrow, StatusChip } from "../ui";
+import { IconCalendar, IconPin, IconScale, IconShield } from "./icons";
 import { TruckArt } from "./TruckArt";
 import { dateRange, km, makeDate, posted, tonnes, tpl, usd, type MP } from "./fmt";
 
-type Fmt = ReturnType<typeof makeDate>;
+const Photo = ({ src }: { src: string }) => (
+  <div className="relative h-40 w-full bg-soft">
+    <Image src={src} alt="" fill sizes="(min-width:1024px) 400px, 100vw" className="object-cover" />
+  </div>
+);
 
-export function VerificationChip({ v, d }: { v: Verification; d: MP }) {
-  const tone = v === "verified" ? "dark" : v === "under_review" ? "gold" : "grey";
-  return (
-    <StatusChip tone={tone}>
-      {v === "verified" && <IconCheck className="mr-1 h-3 w-3" />}
-      {d.verification[v]}
-    </StatusChip>
-  );
-}
+type Fmt = ReturnType<typeof makeDate>;
 
 function Fact({ icon, label, children }: { icon: ReactNode; label: string; children: ReactNode }) {
   return (
@@ -61,6 +59,7 @@ export function LoadCard({ l, d, locale, base, onOpen }: { l: Load; d: MP; local
         </span>
       </div>
 
+      {CARGO_PHOTOS[l.cargoType] && <Photo src={CARGO_PHOTOS[l.cargoType]!} />}
       <div className="flex flex-1 flex-col gap-5 p-5">
         <div>
           <h3 id={`t-${l.ref}`} className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xl font-bold leading-tight">
@@ -105,8 +104,6 @@ export function LoadCard({ l, d, locale, base, onOpen }: { l: Load; d: MP; local
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-line px-5 py-3.5 text-sm text-muted">
         <span>{posted(d, l.postedHoursAgo)}</span>
-        <span>{l.quotes > 0 ? tpl(d.card.quotes, { n: l.quotes }) : d.card.noQuotes}</span>
-        <VerificationChip v={l.owner.verification} d={d} />
         <button type="button" onClick={() => onOpen(l.ref)} className="ml-auto inline-flex items-center gap-1.5 font-semibold text-fg after:absolute after:inset-0 after:content-[''] hover:underline">
           {d.card.view} <IconArrow className="h-4 w-4" />
         </button>
@@ -130,9 +127,13 @@ export function TruckCard({ t, d, locale, base, onOpen }: { t: Truck; d: MP; loc
         </span>
       </div>
 
-      <div className="bg-gradient-to-b from-soft to-surface px-6 pt-4">
-        <TruckArt type={t.type} className="mx-auto h-24 w-full max-w-[280px]" />
-      </div>
+      {TRUCK_PHOTOS[t.type] ? (
+        <Photo src={TRUCK_PHOTOS[t.type]!} />
+      ) : (
+        <div className="bg-gradient-to-b from-soft to-surface px-6 pt-4">
+          <TruckArt type={t.type} className="mx-auto h-24 w-full max-w-[280px]" />
+        </div>
+      )}
 
       <div className="flex flex-1 flex-col gap-5 p-5">
         <div>
@@ -168,12 +169,7 @@ export function TruckCard({ t, d, locale, base, onOpen }: { t: Truck; d: MP; loc
       </div>
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-line px-5 py-3.5 text-sm text-muted">
-        <span className="inline-flex items-center gap-1 font-semibold text-fg">
-          <IconStarSolid className="h-4 w-4 text-gold" /> {t.transporter.rating.toFixed(1)}
-        </span>
-        <span>{tpl(d.card.trips, { n: t.transporter.trips })}</span>
-        <span>{tpl(d.card.fleet, { n: t.transporter.fleet })}</span>
-        <VerificationChip v={t.transporter.verification} d={d} />
+        <span>{posted(d, t.postedHoursAgo)}</span>
         <button type="button" onClick={() => onOpen(t.ref)} className="ml-auto inline-flex items-center gap-1.5 font-semibold text-fg after:absolute after:inset-0 after:content-[''] hover:underline">
           {d.card.view} <IconArrow className="h-4 w-4" />
         </button>
