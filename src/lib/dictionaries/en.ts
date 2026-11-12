@@ -97,6 +97,15 @@ export const en = {
         { t: "Shipment visibility", d: "GPS where compatible, verified driver updates otherwise — clearly labelled." },
       ],
     },
+    marketplace: {
+      eyebrow: "Marketplace",
+      title: "See what moves on Encore",
+      text: "Real-world style cargo requests and truck capacity, side by side. Filter by corridor, vehicle and weight, then sign in to quote or request a truck.",
+      loads: "Loads",
+      trucks: "Trucks",
+      cta: "Open the marketplace",
+      note: "Sample listings for illustration.",
+    },
     corridors: {
       eyebrow: "Freight corridors",
       title: "Built around the corridors that matter",

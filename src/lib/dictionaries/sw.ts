@@ -96,6 +96,15 @@ export const sw: Dict = {
         { t: "Mwonekano wa usafirishaji", d: "GPS inapooana, vinginevyo taarifa za madereva zilizothibitishwa — zimewekwa wazi." },
       ],
     },
+    marketplace: {
+      eyebrow: "Soko",
+      title: "Tazama kinachosafirishwa Encore",
+      text: "Maombi ya mizigo na uwezo wa malori, vikiwa pamoja. Chuja kwa njia, aina ya gari na uzito, kisha ingia ili kutoa nukuu au kuomba lori.",
+      loads: "Mizigo",
+      trucks: "Malori",
+      cta: "Fungua soko",
+      note: "Orodha za mfano kwa maelezo.",
+    },
     corridors: {
       eyebrow: "Njia za usafirishaji",
       title: "Imejengwa kuzunguka njia zenye maana",
