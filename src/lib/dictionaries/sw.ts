@@ -20,6 +20,8 @@ export const sw: Dict = {
     partners: "Washirika",
     about: "Kuhusu Sisi",
     contact: "Wasiliana Nasi",
+    ourServices: "Huduma Zetu",
+    ourTeam: "Timu Yetu",
     login: "Ingia",
     getStarted: "Anza Sasa",
     support: "Msaada",
@@ -786,6 +788,18 @@ export const sw: Dict = {
         "Tuna bima ya mizigo safarini (GIT).",
         "Tunatekeleza sera ya kutovumilia rushwa, ili usafirishaji wa mizigo kuvuka mipaka uwe wa uwazi, salama na unaozingatia sheria.",
       ],
+      certsTitle: "Vyeti rasmi",
+      certsLead: "Vimetolewa kwa Encore Holdings Group Limited na mamlaka za Tanzania.",
+      issuedBy: "Imetolewa na",
+      enlarge: "Bofya kukuza",
+      close: "Funga",
+      prev: "Iliyotangulia",
+      next: "Inayofuata",
+      certs: [
+        { t: "Cheti cha Usajili wa Kampuni", issuer: "Wakala wa Usajili wa Biashara na Leseni (BRELA)", d: "Namba ya kampuni 206491809" },
+        { t: "Cheti cha Namba ya Mlipakodi (TIN)", issuer: "Mamlaka ya Mapato Tanzania (TRA)", d: "TIN 206-491-809" },
+        { t: "Cheti cha Kibali cha Kodi (Tax Clearance)", issuer: "Mamlaka ya Mapato Tanzania (TRA)", d: "Uzingatiaji wa kodi kwa shughuli za usafirishaji, uhifadhi na usambazaji" },
+      ],
     },
   },
   how: {
@@ -818,6 +832,9 @@ export const sw: Dict = {
   cargoOwners: {
     title: "Kwa Wenye Mizigo",
     lead: "Safirisha mizigo kwa wasafirishaji waliothibitishwa, nukuu zilizoidhinishwa na kumbukumbu zilizo wazi.",
+    fleetTitle: "Malori yaliyo tayari kwa mzigo wako",
+    fleetLead: "Tazama kila lori lililoorodheshwa Encore. Chuja kwa njia, aina ya gari na uwezo wa kubeba, kisha fungua lori kuona vipimo na upatikanaji wake kamili.",
+    fleetCta: "Fungua soko lote",
     getTitle: "Unachoweza kufanya",
     get: [
       "Wasilisha maombi ya usafirishaji wa mzigo wako",
@@ -840,6 +857,9 @@ export const sw: Dict = {
   transporters: {
     title: "Kwa Wasafirishaji",
     lead: "Fikia mahitaji halisi ya mizigo katika njia za biashara. Tunatoa fursa halisi — si ahadi za kiasi cha mizigo.",
+    loadsTitle: "Mizigo inayosubiri malori",
+    loadsLead: "Tazama mizigo iliyowekwa Encore sasa hivi. Chuja kwa njia, aina ya gari na uzito ili upate mizigo ambayo malori yako yanaweza kubeba, bei zikionyeshwa wazi.",
+    loadsCta: "Fungua soko lote",
     whoTitle: "Nani anaweza kujiunga",
     who: "Kampuni za usafirishaji na wamiliki wa magari. Kampuni inaweza kuwa na watumiaji kadhaa walioidhinishwa: mmiliki, msimamizi, meneja wa magari na dispatcher — kila mmoja anaona tu kile ambacho jukumu lake linaruhusu.",
     manageTitle: "Unachosimamia",

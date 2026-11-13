@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { FinalCta } from "@/components/home-sections";
+import { MarketplaceSection } from "@/components/marketplace/MarketplaceSection";
 import { CheckList, InfoCard, LinkButton, NumberedSteps, PageHero, Section, SectionHead, StatusChip } from "@/components/ui";
 import { getDict, isLocale } from "@/lib/i18n";
 import { href } from "@/lib/routes";
@@ -25,6 +26,7 @@ export default async function CargoOwners({ params }: P) {
         <LinkButton href={href(locale, "register")} variant="gold" arrow>{d.common.registerCargoOwner}</LinkButton>
         <LinkButton href={href(locale, "contact")} variant="outline">{d.common.contactUs}</LinkButton>
       </PageHero>
+      <MarketplaceSection locale={locale} d={d} focus="truck" title={c.fleetTitle} lead={c.fleetLead} cta={c.fleetCta} />
       <Section>
         <div className="grid gap-10 lg:grid-cols-2">
           <div><SectionHead title={c.getTitle} /><CheckList items={c.get} /></div>

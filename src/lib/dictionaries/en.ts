@@ -21,6 +21,8 @@ export const en = {
     partners: "Partners",
     about: "About",
     contact: "Contact",
+    ourServices: "Our Services",
+    ourTeam: "Our Team",
     login: "Login",
     getStarted: "Get Started",
     support: "Support",
@@ -787,6 +789,18 @@ export const en = {
         "We carry goods-in-transit (GIT) insurance.",
         "We apply a zero-tolerance policy against corruption, for transparent, secure and compliant cross-border freight.",
       ],
+      certsTitle: "Official certificates",
+      certsLead: "Issued to Encore Holdings Group Limited by the Tanzanian authorities.",
+      issuedBy: "Issued by",
+      enlarge: "Click to enlarge",
+      close: "Close",
+      prev: "Previous",
+      next: "Next",
+      certs: [
+        { t: "Certificate of Incorporation", issuer: "Business Registrations and Licensing Agency (BRELA)", d: "Company number 206491809" },
+        { t: "Taxpayer Identification Number (TIN) certificate", issuer: "Tanzania Revenue Authority (TRA)", d: "TIN 206-491-809" },
+        { t: "Tax Clearance Certificate", issuer: "Tanzania Revenue Authority (TRA)", d: "Tax compliance for logistics, transportation and warehousing activities" },
+      ],
     },
   },
   how: {
@@ -819,6 +833,9 @@ export const en = {
   cargoOwners: {
     title: "For Cargo Owners",
     lead: "Move cargo with verified transporters, approved quotations and clear records.",
+    fleetTitle: "Trucks ready for your cargo",
+    fleetLead: "Browse every truck listed on Encore. Filter by corridor, vehicle type and payload, then open a truck to see its full specification and availability.",
+    fleetCta: "Open the full marketplace",
     getTitle: "What you can do",
     get: [
       "Submit transportation requests for your cargo",
@@ -841,6 +858,9 @@ export const en = {
   transporters: {
     title: "For Transporters",
     lead: "Reach verified cargo demand on trade corridors. We offer real opportunities — not guaranteed volumes.",
+    loadsTitle: "Loads waiting for trucks",
+    loadsLead: "See the cargo currently posted on Encore. Filter by corridor, vehicle type and weight to find loads your trucks can carry, with prices shown openly.",
+    loadsCta: "Open the full marketplace",
     whoTitle: "Who can join",
     who: "Transport companies and fleet owners. A company can have several authorised users: owner, administrator, fleet manager and dispatcher — each sees only what their role allows.",
     manageTitle: "What you manage",

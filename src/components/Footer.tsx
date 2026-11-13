@@ -7,7 +7,7 @@ import { IconFacebook, IconInstagram, Logo } from "./ui";
 import { LanguageSwitch } from "./LanguageSwitch";
 
 export function Footer({ locale, d }: { locale: Locale; d: Dict }) {
-  const cols: { title: string; links: { key: RouteKey; label: string }[] }[] = [
+  const cols: { title: string; links: { key: RouteKey; label: string; to?: string }[] }[] = [
     {
       title: d.footer.explore,
       links: [
@@ -15,6 +15,8 @@ export function Footer({ locale, d }: { locale: Locale; d: Dict }) {
         { key: "howItWorks", label: d.nav.howItWorks },
         { key: "corridors", label: d.nav.corridors },
         { key: "about", label: d.nav.about },
+        { key: "about", label: d.nav.ourServices, to: `${href(locale, "about")}#services` },
+        { key: "about", label: d.nav.ourTeam, to: `${href(locale, "about")}#team` },
         { key: "faq", label: d.faq.title },
       ],
     },
@@ -69,8 +71,8 @@ export function Footer({ locale, d }: { locale: Locale; d: Dict }) {
               <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-gold">{c.title}</h3>
               <ul className="space-y-1">
                 {c.links.map((l) => (
-                  <li key={l.key}>
-                    <Link href={href(locale, l.key)} className="inline-block py-1.5 font-light text-g1 transition hover:text-white">{l.label}</Link>
+                  <li key={l.to ?? l.key}>
+                    <Link href={l.to ?? href(locale, l.key)} className="inline-block py-1.5 font-light text-g1 transition hover:text-white">{l.label}</Link>
                   </li>
                 ))}
               </ul>

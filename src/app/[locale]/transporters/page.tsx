@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { FinalCta } from "@/components/home-sections";
+import { MarketplaceSection } from "@/components/marketplace/MarketplaceSection";
 import { CheckList, InfoCard, LinkButton, NumberedSteps, PageHero, Section, SectionHead } from "@/components/ui";
 import { getDict, isLocale } from "@/lib/i18n";
 import { href } from "@/lib/routes";
@@ -25,6 +26,7 @@ export default async function Transporters({ params }: P) {
         <LinkButton href={href(locale, "register")} variant="gold" arrow>{d.common.registerTransporter}</LinkButton>
         <LinkButton href={href(locale, "contact")} variant="outline">{d.common.contactUs}</LinkButton>
       </PageHero>
+      <MarketplaceSection locale={locale} d={d} focus="load" title={t.loadsTitle} lead={t.loadsLead} cta={t.loadsCta} />
       <Section>
         <div className="grid gap-10 lg:grid-cols-2">
           <div><SectionHead title={t.whoTitle} lead={t.who} /></div>

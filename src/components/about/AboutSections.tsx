@@ -5,8 +5,14 @@ import type { Locale } from "@/lib/i18n-config";
 import { href } from "@/lib/routes";
 import { IconSnow } from "../marketplace/icons";
 import { CheckList, IconArrow, IconBox, IconCheck, IconTruck, LinkButton, Section, SectionHead } from "../ui";
+import { CertificateGallery } from "./CertificateGallery";
 import { IconBriefcase, IconClipboard, IconWarehouse } from "./icons";
 
+const CERT_FILES = [
+  { src: "/certificates/brela-incorporation.jpg", width: 970, height: 1367 },
+  { src: "/certificates/tra-tin.jpg", width: 967, height: 1344 },
+  { src: "/certificates/tra-tax-clearance.jpg", width: 920, height: 1302 },
+];
 const TEAM_PHOTOS = ["/team/jenhandebo.jpg", "/team/mvula.jpg", "/team/mlindila.jpg"];
 const PROJECT_PHOTOS = [
   "/projects/kolwezi-containers.jpg",
@@ -59,7 +65,7 @@ export function Services({ locale, d }: { locale: Locale; d: Dict }) {
   const itemIcons = [IconClipboard, IconWarehouse, IconTruck, IconSnow];
 
   return (
-    <Section tint>
+    <Section tint id="services" className="scroll-mt-20">
       <SectionHead eyebrow={s.eyebrow} title={s.title} lead={s.lead} />
 
       {/* Service number one: the marketplace that joins everyone in the freight chain */}
@@ -119,7 +125,7 @@ export function Services({ locale, d }: { locale: Locale; d: Dict }) {
 export function Team({ d }: { d: Dict }) {
   const t = d.about.team;
   return (
-    <Section>
+    <Section id="team" className="scroll-mt-20">
       <SectionHead eyebrow={t.eyebrow} title={t.title} lead={t.lead} />
       <ul className="grid gap-6 md:grid-cols-3">
         {t.members.map((m, i) => (
@@ -186,7 +192,7 @@ export function Projects({ d }: { d: Dict }) {
 export function Legal({ d }: { d: Dict }) {
   const l = d.about.legal;
   return (
-    <Section>
+    <Section id="legal" className="scroll-mt-20">
       <SectionHead eyebrow={l.eyebrow} title={l.title} />
       <div className="grid gap-6 lg:grid-cols-2">
         <dl className="card divide-y divide-line !py-2">
@@ -204,6 +210,15 @@ export function Legal({ d }: { d: Dict }) {
           </div>
           <CheckList className="mt-5" items={l.points} />
         </div>
+      </div>
+
+      <div className="mt-14">
+        <h3 className="text-2xl font-bold tracking-tight">{l.certsTitle}</h3>
+        <p className="mt-2 mb-8 max-w-3xl text-muted">{l.certsLead}</p>
+        <CertificateGallery
+          certs={l.certs.map((c, i) => ({ ...CERT_FILES[i], title: c.t, issuer: c.issuer, note: c.d }))}
+          labels={{ issuedBy: l.issuedBy, enlarge: l.enlarge, close: l.close, prev: l.prev, next: l.next }}
+        />
       </div>
     </Section>
   );

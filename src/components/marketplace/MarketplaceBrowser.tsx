@@ -20,11 +20,13 @@ const vehicleOf = (l: Listing) => (l.kind === "load" ? l.truckType : l.type);
 const soonOf = (l: Listing) => (l.kind === "load" ? l.pickup[0] : l.availIn);
 
 export function MarketplaceBrowser({
-  d, locale, base, links, listings, tier,
+  d, locale, base, links, listings, tier, focus = "all",
 }: {
   d: MP; locale: Locale; base: number; links: { login: string; register: string; app: string; whatsapp: string }; listings: Listing[]; tier: Tier;
+  /** "truck" / "load" locks the view to one kind (used on the solution pages); "all" shows the tabs. */
+  focus?: Tab;
 }) {
-  const [tab, setTab] = useState<Tab>("all");
+  const [tab, setTab] = useState<Tab>(focus);
   const [q, setQ] = useState("");
   const [corridor, setCorridor] = useState<Corridor | "">("");
   const [vehicle, setVehicle] = useState<VehicleType | "">("");
@@ -92,11 +94,15 @@ export function MarketplaceBrowser({
     <div>
       {/* Tabs + search */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div role="tablist" aria-label={d.eyebrow} className="flex w-fit max-w-full gap-1 overflow-x-auto rounded-full border border-line bg-surface p-1.5">
-          {tabBtn("all", d.tabs.all, counts.all)}
-          {tabBtn("load", d.tabs.loads, counts.load)}
-          {tabBtn("truck", d.tabs.trucks, counts.truck)}
-        </div>
+        {focus === "all" ? (
+          <div role="tablist" aria-label={d.eyebrow} className="flex w-fit max-w-full gap-1 overflow-x-auto rounded-full border border-line bg-surface p-1.5">
+            {tabBtn("all", d.tabs.all, counts.all)}
+            {tabBtn("load", d.tabs.loads, counts.load)}
+            {tabBtn("truck", d.tabs.trucks, counts.truck)}
+          </div>
+        ) : (
+          <p className="text-lg font-bold">{focus === "truck" ? d.tabs.trucks : d.tabs.loads} <span className="ml-1 rounded-full bg-gold px-2.5 py-0.5 text-sm text-ongold">{counts[focus]}</span></p>
+        )}
         <div className="flex gap-2 lg:w-[28rem]">
           <label className="relative flex-1">
             <span className="sr-only">{d.searchLabel}</span>
@@ -145,7 +151,7 @@ export function MarketplaceBrowser({
       </div>
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 text-sm text-muted" aria-live="polite">
-        <p>{tpl(d.showing, { n: results.length, t: counts.all })}</p>
+        <p>{tpl(d.showing, { n: results.length, t: counts[focus] })}</p>
         {active > 0 && <button type="button" onClick={reset} className="link-gold text-fg">{d.filters.reset}</button>}
       </div>
 

@@ -59,7 +59,7 @@ export function Header({ locale, nav }: { locale: Locale; nav: Dict["nav"] }) {
   const pill = (on: boolean) =>
     `flex items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-2.5 text-[15px] font-medium transition ${on ? "bg-surface text-fg shadow-[0_1px_4px_rgba(29,29,27,.12)]" : "text-muted hover:bg-surface/70 hover:text-fg"}`;
 
-  const menuLinks: { key: RouteKey; label: string }[] = [
+  const menuLinks: { key: RouteKey; label: string; to?: string }[] = [
     { key: "marketplace", label: nav.marketplace },
     { key: "howItWorks", label: nav.howItWorks },
     { key: "cargoOwners", label: nav.cargoOwners },
@@ -68,6 +68,8 @@ export function Header({ locale, nav }: { locale: Locale; nav: Dict["nav"] }) {
     { key: "corridors", label: nav.corridors },
     { key: "partners", label: nav.partners },
     { key: "about", label: nav.about },
+    { key: "about", label: nav.ourServices, to: `${href(locale, "about")}#services` },
+    { key: "about", label: nav.ourTeam, to: `${href(locale, "about")}#team` },
     { key: "contact", label: nav.contact },
   ];
 
@@ -102,7 +104,25 @@ export function Header({ locale, nav }: { locale: Locale; nav: Dict["nav"] }) {
             <Link href={href(locale, "marketplace")} className={pill(active("marketplace"))}>{nav.marketplace}</Link>
             <Link href={href(locale, "corridors")} className={pill(active("corridors"))}>{nav.corridors}</Link>
             <Link href={href(locale, "partners")} className={pill(active("partners"))}>{nav.partners}</Link>
-            <Link href={href(locale, "about")} className={pill(active("about"))}>{nav.about}</Link>
+            {/* Very wide screens: the three links sit directly in the bar. */}
+            <div className="hidden min-[1920px]:contents">
+              <Link href={href(locale, "about")} className={pill(active("about"))}>{nav.about}</Link>
+              <Link href={`${href(locale, "about")}#services`} className={pill(false)}>{nav.ourServices}</Link>
+              <Link href={`${href(locale, "about")}#team`} className={pill(false)}>{nav.ourTeam}</Link>
+            </div>
+            {/* Laptops: "About" opens a small menu, so the bar never overflows. */}
+            <div className="group relative min-[1920px]:hidden">
+              <Link href={href(locale, "about")} className={pill(active("about"))}>
+                {nav.about} <IconChevron className="h-3.5 w-3.5" />
+              </Link>
+              <div className="invisible absolute left-0 top-full z-50 pt-2 opacity-0 transition group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+                <div role="menu" className="min-w-56 rounded-2xl border border-line bg-surface p-2 shadow-lift">
+                  <Link role="menuitem" href={href(locale, "about")} className={`block rounded-xl px-4 py-2.5 text-[15px] font-medium hover:bg-soft ${active("about") ? "bg-goldsoft" : ""}`}>{nav.about}</Link>
+                  <Link role="menuitem" href={`${href(locale, "about")}#services`} className="block rounded-xl px-4 py-2.5 text-[15px] font-medium hover:bg-soft">{nav.ourServices}</Link>
+                  <Link role="menuitem" href={`${href(locale, "about")}#team`} className="block rounded-xl px-4 py-2.5 text-[15px] font-medium hover:bg-soft">{nav.ourTeam}</Link>
+                </div>
+              </div>
+            </div>
             <Link href={href(locale, "contact")} className={pill(active("contact"))}>{nav.contact}</Link>
           </nav>
 
@@ -165,12 +185,12 @@ export function Header({ locale, nav }: { locale: Locale; nav: Dict["nav"] }) {
             <nav aria-label="Mobile">
               <ul className="space-y-1">
                 {menuLinks.map((l, i) => (
-                  <li key={l.key}>
+                  <li key={l.to ?? l.key}>
                     <Link
                       ref={i === 0 ? firstLink : undefined}
-                      href={href(locale, l.key)}
-                      aria-current={active(l.key) ? "page" : undefined}
-                      className={`flex min-h-[52px] items-center justify-between rounded-2xl px-4 text-xl font-semibold transition ${active(l.key) ? "bg-goldsoft" : "hover:bg-soft active:bg-soft"}`}
+                      href={l.to ?? href(locale, l.key)}
+                      aria-current={!l.to && active(l.key) ? "page" : undefined}
+                      className={`flex min-h-[52px] items-center justify-between rounded-2xl px-4 text-xl font-semibold transition ${!l.to && active(l.key) ? "bg-goldsoft" : "hover:bg-soft active:bg-soft"}`}
                     >
                       {l.label}
                       <IconArrow className="h-5 w-5 text-muted" />
