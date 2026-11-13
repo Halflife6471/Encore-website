@@ -31,6 +31,18 @@ export type Sector = "agri" | "manufacturing" | "mining" | "construction" | "ret
 /** Who is looking: guests and registered (not yet verified) accounts see public data; verified accounts see everything. */
 export type Tier = "guest" | "registered" | "verified";
 export type Bi = { en: string; sw: string };
+/** Allowed values, in display order (the form drop-downs and the server-side validation share these). */
+export const COUNTRY_LIST: Country[] = ["TZ", "ZM", "CD", "KE", "UG", "RW", "BI", "MW"];
+export const CORRIDOR_LIST: Corridor[] = ["tz-zm", "tz-cd", "tz-mw", "tz-rw-bi", "northern", "tz-ke", "domestic"];
+export const VEHICLE_LIST: VehicleType[] = ["flatbed", "curtainside", "container", "tipper", "fuel_tanker", "chem_tanker", "reefer", "box", "lowbed", "bulk"];
+export const CARGO_TYPE_LIST: CargoType[] = ["general", "agri_inputs", "food", "construction", "minerals", "chemicals", "fuel", "steel", "machinery", "pharma", "fmcg", "heavy"];
+export const PACKAGING_LIST: Packaging[] = ["bagged", "palletised", "containerised", "bulk", "liquid", "coils", "oversize", "loose"];
+export const FEATURE_LIST: Feature[] = ["gps", "tarpaulin", "twistlocks", "escort", "hazmat", "temp_log", "insurance", "vetted_driver", "pod_photos", "comesa", "permits", "reefer_unit"];
+export const DOC_LIST: DocType[] = ["commercial_invoice", "packing_list", "bill_of_lading", "t1", "coo", "sds", "phyto"];
+export const SECTOR_LIST: Sector[] = ["agri", "manufacturing", "mining", "construction", "retail", "energy", "pharma", "trading"];
+export const TRUCK_DOC_LIST = ["registration_card", "insurance", "transit_permit", "comesa_yellow_card", "inspection", "tank_certificate", "hazmat_certificate", "other"] as const;
+export type TruckDocType = (typeof TRUCK_DOC_LIST)[number];
+
 export type Place = { city: string; cc: Country };
 
 export interface Load {
@@ -53,8 +65,8 @@ export interface Load {
   trucks: number;
   pickup: [number, number];
   deliveryBy: number;
-  /** Indicative budget per truck, USD. */
-  budget: [number, number];
+  /** Indicative budget per truck, USD. `null` = the owner prefers to receive quotes. */
+  budget: [number, number] | null;
   temp?: [number, number];
   hazmat?: string;
   reqs: Feature[];
@@ -83,8 +95,8 @@ export interface Truck {
   availIn: number;
   routes: Corridor[];
   features: Feature[];
-  /** Indicative rate, USD per km (loaded). */
-  rate: [number, number];
+  /** Indicative rate, USD per km (loaded). `null` = not stated. */
+  rate: [number, number] | null;
   postedHoursAgo: number;
   /** Verified accounts only. */
   priv?: { company: string; contact: Contact; baseAddress: string };

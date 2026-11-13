@@ -52,7 +52,7 @@ export function LoadCard({ l, d, locale, base, onOpen }: { l: Load; d: MP; local
       <div className="flex flex-wrap items-center gap-2 border-b border-line bg-soft/60 px-5 py-3">
         <StatusChip tone="dark">{d.kind.load}</StatusChip>
         <span className="text-sm font-semibold text-muted">{l.ref}</span>
-        <SampleTag d={d} />
+        {l.isSample && <SampleTag d={d} />}
         <span className="ml-auto flex flex-wrap items-center gap-1.5">
           {l.urgent && <StatusChip tone="danger">{d.status.urgent}</StatusChip>}
           <StatusChip tone="gold">{d.status.open}</StatusChip>
@@ -96,9 +96,9 @@ export function LoadCard({ l, d, locale, base, onOpen }: { l: Load; d: MP; local
         <div className="mt-auto flex flex-wrap items-end justify-between gap-3 rounded-2xl bg-goldsoft px-4 py-3">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">{d.card.budget}</p>
-            <p className="text-xl font-extrabold">USD {usd(l.budget[0])} – {usd(l.budget[1])}</p>
+            <p className="text-xl font-extrabold">{l.budget ? `USD ${usd(l.budget[0])} – ${usd(l.budget[1])}` : d.status.open}</p>
           </div>
-          <p className="text-sm font-medium text-muted">{d.card.perTruck}</p>
+          {l.budget && <p className="text-sm font-medium text-muted">{d.card.perTruck}</p>}
         </div>
       </div>
 
@@ -121,7 +121,7 @@ export function TruckCard({ t, d, locale, base, onOpen }: { t: Truck; d: MP; loc
       <div className="flex flex-wrap items-center gap-2 border-b border-line bg-soft/60 px-5 py-3">
         <StatusChip tone="gold">{d.kind.truck}</StatusChip>
         <span className="text-sm font-semibold text-muted">{t.ref}</span>
-        <SampleTag d={d} />
+        {t.isSample && <SampleTag d={d} />}
         <span className="ml-auto">
           <StatusChip tone={now ? "dark" : "grey"}>{now ? d.status.now : tpl(d.status.soon, { n: t.availIn })}</StatusChip>
         </span>
@@ -162,9 +162,9 @@ export function TruckCard({ t, d, locale, base, onOpen }: { t: Truck; d: MP; loc
         <div className="mt-auto flex flex-wrap items-end justify-between gap-3 rounded-2xl bg-goldsoft px-4 py-3">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">{d.card.rate}</p>
-            <p className="text-xl font-extrabold">USD {t.rate[0].toFixed(1)} – {t.rate[1].toFixed(1)}</p>
+            <p className="text-xl font-extrabold">{t.rate ? `USD ${t.rate[0].toFixed(1)} – ${t.rate[1].toFixed(1)}` : d.card.onRequest}</p>
           </div>
-          <p className="text-sm font-medium text-muted">{d.card.perKm}</p>
+          {t.rate && <p className="text-sm font-medium text-muted">{d.card.perKm}</p>}
         </div>
       </div>
 

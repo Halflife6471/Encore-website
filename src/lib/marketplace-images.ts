@@ -10,8 +10,13 @@ import type { CargoType, VehicleType } from "./marketplace";
  * Recommended: landscape, about 1200 x 800 px, JPEG/WebP, under 250 KB.
  */
 export const TRUCK_PHOTOS: Partial<Record<VehicleType, string>> = {
-  flatbed: "/marketplace/trucks/flatbed.jpg", // placeholder: machinery on a flat trailer; replace with a dedicated flatbed photo
+  flatbed: "/marketplace/trucks/flatbed.jpg", // stand-in: machinery on a flat trailer
   curtainside: "/marketplace/trucks/curtainside.jpg",
+  container: "/marketplace/trucks/curtainside.jpg", // stand-in: long semi-trailer combination
+  tipper: "/marketplace/trucks/tipper.jpg", // stand-in: tipping body being loaded
+  fuel_tanker: "/marketplace/trucks/bulk.jpg", // stand-in: tank truck
+  chem_tanker: "/marketplace/trucks/bulk.jpg", // stand-in: tank truck
+  reefer: "/marketplace/trucks/box.jpg", // stand-in: closed box body
   lowbed: "/marketplace/trucks/lowbed.jpg",
   box: "/marketplace/trucks/box.jpg",
   bulk: "/marketplace/trucks/bulk.jpg",

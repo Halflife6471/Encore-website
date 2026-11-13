@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { ResendForm } from "@/components/forms/ResendForm";
+import { MyLoads, MyTrucks, type LoadRow, type TruckRow } from "@/components/listings/MyListings";
 import { IconCheck, LinkButton, PageHero, Section, StatusChip } from "@/components/ui";
 import { logoutAction } from "@/lib/actions/auth";
 import { getDict, isLocale } from "@/lib/i18n";
@@ -11,7 +12,7 @@ import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic"; // always per-user, never cached
 
-type P = { params: Promise<{ locale: string }>; searchParams: Promise<{ welcome?: string }> };
+type P = { params: Promise<{ locale: string }>; searchParams: Promise<{ welcome?: string; posted?: string; ref?: string; closed?: string }> };
 export async function generateMetadata({ params }: P): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
@@ -29,7 +30,7 @@ type StepState = "done" | "next" | "soon";
  */
 export default async function Workspace({ params, searchParams }: P) {
   const { locale } = await params;
-  const { welcome } = await searchParams;
+  const { welcome, posted, ref, closed } = await searchParams;
   if (!isLocale(locale)) notFound();
   const d = await getDict(locale);
   const t = d.dashboard;
@@ -71,6 +72,28 @@ export default async function Workspace({ params, searchParams }: P) {
     company = data?.business_name ?? null;
   }
 
+  // The customer's own listings (row-level security returns only their rows).
+  let loads: LoadRow[] = [];
+  let trucks: TruckRow[] = [];
+  if (profile.role === "cargo_owner") {
+    const { data } = await supabase
+      .from("cargo_requests")
+      .select("id,reference,status,origin_city,origin_country,destination_city,destination_country,weight_t,vehicle_type,rejected_reason")
+      .eq("owner_profile_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(30);
+    loads = (data ?? []) as LoadRow[];
+  } else if (profile.role === "transporter") {
+    const { data } = await supabase
+      .from("trucks")
+      .select("id,reference,status,vehicle_type,make_model,year,payload_t,location_city,location_country,rejected_reason,truck_documents(count)")
+      .order("created_at", { ascending: false })
+      .limit(50);
+    trucks = (data ?? []) as unknown as TruckRow[];
+  }
+  const hasListings = loads.some((l) => l.status !== "closed") || trucks.some((x) => x.status !== "closed");
+  const hasDocs = trucks.some((x) => (x.truck_documents?.[0]?.count ?? 0) > 0);
+
   const contactVerified = profile.status !== "pending_contact_verification";
   const status = profile.status as keyof typeof t.statuses;
   const statusTone = status === "active" ? "dark" : status === "limited" ? "gold" : status === "suspended" ? "danger" : "grey";
@@ -78,7 +101,14 @@ export default async function Workspace({ params, searchParams }: P) {
 
   // Steps that exist today are real; the rest honestly say they open in the next release.
   const labels = profile.role === "transporter" ? t.transporterSteps : t.cargoSteps;
-  const states: StepState[] = labels.map((_, i) => (i === 0 ? "done" : i === 1 ? (contactVerified ? "done" : "next") : "soon"));
+  const states: StepState[] = labels.map((_, i) => {
+    if (i === 0) return "done";
+    if (i === 1) return contactVerified ? "done" : "next";
+    if (profile.role === "cargo_owner" && i === 4) return hasListings ? "done" : "next";       // "Submit a cargo request"
+    if (profile.role === "transporter" && i === 3) return hasListings ? "done" : "next";       // "Register trucks"
+    if (profile.role === "transporter" && i === 4) return hasDocs ? "done" : hasListings ? "next" : "soon"; // "Upload documents"
+    return "soon";
+  });
 
   return (
     <>
@@ -91,6 +121,15 @@ export default async function Workspace({ params, searchParams }: P) {
       </PageHero>
 
       <Section>
+        {posted === "load" && ref && (
+          <div role="status" className="mb-6 flex items-center gap-4 rounded-3xl border border-goldline bg-goldsoft p-5">
+            <span className="grid h-10 w-10 flex-none place-items-center rounded-full bg-gold"><IconCheck className="h-5 w-5" /></span>
+            <p className="font-semibold">{d.listings.my.posted.replace("{ref}", ref)}</p>
+          </div>
+        )}
+        {closed && (
+          <div role="status" className="mb-6 rounded-3xl border border-line bg-soft p-4 font-medium">{d.listings.my.closed}</div>
+        )}
         {welcome && !isStaff && (
           <div role="status" className="mb-6 flex flex-wrap items-center gap-4 rounded-3xl border border-goldline bg-goldsoft p-5 sm:p-6">
             <span className="grid h-12 w-12 flex-none place-items-center rounded-full bg-gold"><IconCheck className="h-6 w-6" /></span>
@@ -150,6 +189,9 @@ export default async function Workspace({ params, searchParams }: P) {
             </div>
           )}
         </div>
+
+        {profile.role === "cargo_owner" && <div className="mt-6"><MyLoads locale={locale} d={d} rows={loads} /></div>}
+        {profile.role === "transporter" && <div className="mt-6"><MyTrucks locale={locale} d={d} rows={trucks} /></div>}
       </Section>
     </>
   );

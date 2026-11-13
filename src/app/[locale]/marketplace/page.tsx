@@ -4,7 +4,7 @@ import { MarketplaceBrowser } from "@/components/marketplace/MarketplaceBrowser"
 import { IconInfo } from "@/components/marketplace/icons";
 import { LinkButton, Section } from "@/components/ui";
 import { getDict, isLocale } from "@/lib/i18n";
-import { href } from "@/lib/routes";
+import { appPath, href } from "@/lib/routes";
 import { getMarketplace } from "@/lib/marketplace-data";
 import { pageMeta } from "@/lib/seo";
 import { CONTACT } from "@/lib/site";
@@ -22,7 +22,8 @@ export default async function Marketplace({ params }: P) {
   if (!isLocale(locale)) notFound();
   const d = await getDict(locale);
   const m = d.marketplace;
-  const { listings, tier, base } = await getMarketplace();
+  const { listings, tier, base, role } = await getMarketplace();
+  const hasSamples = listings.some((l) => l.isSample);
 
   return (
     <>
@@ -32,14 +33,22 @@ export default async function Marketplace({ params }: P) {
           <p className="eyebrow mb-2">{m.eyebrow}</p>
           <h1 className="max-w-4xl text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">{m.title}</h1>
           <p className="mt-4 max-w-3xl text-base font-light leading-relaxed text-muted sm:text-lg">{m.lead}</p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            {role === "cargo_owner" && <LinkButton href={appPath(locale, "post-load")} variant="gold" arrow>{d.listings.my.post}</LinkButton>}
+            {role === "transporter" && <LinkButton href={appPath(locale, "register-truck")} variant="gold" arrow>{d.listings.my.register}</LinkButton>}
+            {!role && <LinkButton href={href(locale, "register")} variant="gold" arrow>{d.common.createAccount}</LinkButton>}
+            {role && <LinkButton href={href(locale, "app")} variant="outline">{d.dashboard.title}</LinkButton>}
+          </div>
         </div>
       </div>
 
       <Section className="!py-8 sm:!py-10">
-        <div className="mb-8 flex gap-3 rounded-2xl border border-goldline bg-goldsoft p-4 sm:p-5" role="note">
-          <IconInfo className="mt-0.5 h-5 w-5 flex-none" />
-          <p className="text-[15px] leading-relaxed"><b>{m.sampleBanner}.</b> {m.sampleText}</p>
-        </div>
+        {hasSamples && (
+          <div className="mb-8 flex gap-3 rounded-2xl border border-goldline bg-goldsoft p-4 sm:p-5" role="note">
+            <IconInfo className="mt-0.5 h-5 w-5 flex-none" />
+            <p className="text-[15px] leading-relaxed"><b>{m.sampleBanner}.</b> {m.sampleText}</p>
+          </div>
+        )}
 
         <MarketplaceBrowser
           d={m}

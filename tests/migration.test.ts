@@ -2,7 +2,7 @@ import { PGlite } from "@electric-sql/pglite";
 import { readFileSync } from "node:fs";
 import { beforeAll, describe, expect, it } from "vitest";
 
-const migrations = ["20261110000000_public_site_foundation.sql", "20261110000100_move_rls_helpers_to_private_schema.sql", "20261110000200_staff_clear_must_change_password.sql", "20261112000000_marketplace_listings.sql", "20261112000100_seed_sample_marketplace.sql"];
+const migrations = ["20261110000000_public_site_foundation.sql", "20261110000100_move_rls_helpers_to_private_schema.sql", "20261110000200_staff_clear_must_change_password.sql", "20261112000000_marketplace_listings.sql", "20261112000100_seed_sample_marketplace.sql", "20261113000000_listing_forms.sql"];
 const sql = migrations.map((f) => readFileSync(new URL(`../supabase/migrations/${f}`, import.meta.url), "utf8")).join("\n");
 let db: PGlite;
 
@@ -232,5 +232,84 @@ describe("marketplace visibility – public data open, sensitive data verified-o
     await asUser(s, () => db.query("update public.cargo_requests set urgent=true where reference='EN-L-2041'"));
     expect((await db.query<any>("select urgent from public.cargo_requests where reference='EN-L-2041'")).rows[0].urgent).toBe(true);
     expect(await asUser(s, async () => (await db.query("select * from public.truck_private")).rows.length)).toBe(25);
+  });
+});
+
+describe("listing forms – customers post loads and register trucks, only staff publish", () => {
+  const loadSql = (owner: string, status = "pending_review", extra = "") =>
+    `insert into public.cargo_requests (owner_profile_id,status,corridor,origin_city,origin_country,destination_city,destination_country,distance_km,transit_days_min,transit_days_max,commodity_en,cargo_type,packaging,weight_t,vehicle_type,pickup_from,pickup_to,deliver_by ${extra.split("|")[0] ?? ""})
+     values ('${owner}','${status}','tz-zm','Dar es Salaam','TZ','Lusaka','ZM',1980,5,8,'Cement','construction','bagged',30,'curtainside',current_date+2,current_date+4,current_date+10 ${extra.split("|")[1] ?? ""}) returning id, reference, status`;
+  const truckSql = (company: string, status = "pending_review") =>
+    `insert into public.trucks (company_id,status,vehicle_type,make_model,year,axle_configuration,payload_t,body_spec,location_city,location_country,available_from,corridors,features)
+     values ('${company}','${status}','flatbed','Scania R450',2022,'6x4',34,'13.6 x 2.5 m','Dar es Salaam','TZ',current_date,array['tz-zm'],array['gps']) returning id, reference, status`;
+
+  it("lets a cargo owner post a load for review and generates a reference", async () => {
+    const o = await signup("form-owner@example.com", { full_name: "Form Owner", account_type: "cargo_owner", business_name: "Owner Ltd" }, true);
+    const r = await asUser(o, async () => (await db.query<any>(loadSql(o))).rows[0]);
+    expect(r.status).toBe("pending_review");
+    expect(r.reference).toMatch(/^EN-L-3\d{3}$/);
+    // the owner sees it; signed-out visitors do not (it is not published)
+    expect(await asUser(o, async () => (await db.query("select 1 from public.cargo_requests where reference=$1", [r.reference])).rows.length)).toBe(1);
+    expect(await asAnon(async () => (await db.query("select 1 from public.cargo_requests where reference=$1", [r.reference])).rows.length)).toBe(0);
+  });
+
+  it("does not let customers publish, impersonate, or create samples", async () => {
+    const o = await signup("form-evil@example.com", { full_name: "Form Evil", account_type: "cargo_owner" }, true);
+    const other = await signup("form-victim@example.com", { full_name: "Form Victim", account_type: "cargo_owner" }, true);
+    await expect(asUser(o, () => db.query(loadSql(o, "published")))).rejects.toThrow(/row-level security/);
+    await expect(asUser(o, () => db.query(loadSql(other)))).rejects.toThrow(/row-level security/);
+    await expect(asUser(o, () => db.query(loadSql(o, "pending_review", ",is_sample|,true")))).rejects.toThrow(/row-level security/);
+  });
+
+  it("blocks transporters and suspended accounts from posting loads", async () => {
+    const t = await signup("form-trans@example.com", { full_name: "Form Trans", account_type: "transporter", business_name: "Form Trans Ltd" }, true);
+    await expect(asUser(t, () => db.query(loadSql(t)))).rejects.toThrow(/row-level security/);
+    const s = await signup("form-susp@example.com", { full_name: "Form Susp", account_type: "cargo_owner" }, true);
+    await db.query("update public.profiles set status='suspended' where id=$1", [s]);
+    await expect(asUser(s, () => db.query(loadSql(s)))).rejects.toThrow(/row-level security/);
+  });
+
+  it("lets the owner close a listing but never set it to published, and resets review fields", async () => {
+    const o = await signup("form-close@example.com", { full_name: "Form Close", account_type: "cargo_owner" }, true);
+    const r = await asUser(o, async () => (await db.query<any>(loadSql(o))).rows[0]);
+    await asUser(o, () => db.query("update public.cargo_requests set status='closed' where id=$1", [r.id]));
+    await db.query("update public.cargo_requests set status='pending_review' where id=$1", [r.id]);
+    await expect(asUser(o, () => db.query("update public.cargo_requests set status='published' where id=$1", [r.id]))).rejects.toThrow(/row-level security/);
+    await asUser(o, () => db.query("update public.cargo_requests set rejected_reason='hack', reviewed_at=now(), reference='EN-L-1' where id=$1", [r.id]));
+    const row = (await db.query<any>("select reference, rejected_reason, reviewed_at from public.cargo_requests where id=$1", [r.id])).rows[0];
+    expect(row).toEqual({ reference: r.reference, rejected_reason: null, reviewed_at: null });
+  });
+
+  it("stores private contact details for the owner's own load only", async () => {
+    const o = await signup("form-priv@example.com", { full_name: "Form Priv", account_type: "cargo_owner" }, true);
+    const x = await signup("form-priv2@example.com", { full_name: "Form Priv2", account_type: "cargo_owner" }, true);
+    const mine = await asUser(o, async () => (await db.query<any>(loadSql(o))).rows[0]);
+    const ins = (id: string) => `insert into public.cargo_request_private (cargo_request_id,company_name,contact_name,contact_phone,contact_email) values ('${id}','Owner Ltd','Form Priv','+255700000001','a@b.co')`;
+    await asUser(o, () => db.query(ins(mine.id)));
+    await expect(asUser(x, () => db.query(ins(mine.id)))).rejects.toThrow(/row-level security/);
+    // other customers (even verified) cannot read it while the load is unpublished
+    await db.query("update public.cargo_owners set verification_status='verified' where profile_id=$1", [x]);
+    expect(await asUser(x, async () => (await db.query("select 1 from public.cargo_request_private where cargo_request_id=$1", [mine.id])).rows.length)).toBe(0);
+    expect(await asUser(o, async () => (await db.query("select 1 from public.cargo_request_private where cargo_request_id=$1", [mine.id])).rows.length)).toBe(1);
+  });
+
+  it("lets a transporter company administrator register trucks for their own company only", async () => {
+    const t = await signup("form-fleet@example.com", { full_name: "Form Fleet", account_type: "transporter", business_name: "Fleet Ltd" }, true);
+    const u = await signup("form-fleet2@example.com", { full_name: "Form Fleet2", account_type: "transporter", business_name: "Fleet Two Ltd" }, true);
+    const myCo = (await db.query<any>("select id from public.transporter_companies where owner_profile_id=$1", [t])).rows[0].id;
+    const otherCo = (await db.query<any>("select id from public.transporter_companies where owner_profile_id=$1", [u])).rows[0].id;
+    const r = await asUser(t, async () => (await db.query<any>(truckSql(myCo))).rows[0]);
+    expect(r.reference).toMatch(/^EN-T-3\d{3}$/);
+    await expect(asUser(t, () => db.query(truckSql(otherCo)))).rejects.toThrow(/row-level security/);
+    await expect(asUser(t, () => db.query(truckSql(myCo, "published")))).rejects.toThrow(/row-level security/);
+    // a cargo owner cannot register trucks
+    const o = await signup("form-notfleet@example.com", { full_name: "Not Fleet", account_type: "cargo_owner" }, true);
+    await expect(asUser(o, () => db.query(truckSql(myCo)))).rejects.toThrow(/row-level security/);
+    // the company can record documents for its truck; nobody else can
+    const doc = (id: string) => `insert into public.truck_documents (truck_id,doc_type,storage_path,file_name,mime_type,size_bytes) values ('${id}','insurance','${myCo}/${id}/insurance-1.pdf','policy.pdf','application/pdf',1234)`;
+    await asUser(t, () => db.query(doc(r.id)));
+    await expect(asUser(u, () => db.query(doc(r.id)))).rejects.toThrow(/row-level security/);
+    expect(await asUser(t, async () => (await db.query("select 1 from public.truck_documents where truck_id=$1", [r.id])).rows.length)).toBe(1);
+    expect(await asUser(u, async () => (await db.query("select 1 from public.truck_documents where truck_id=$1", [r.id])).rows.length)).toBe(0);
   });
 });

@@ -49,7 +49,7 @@ function mapLoad(r: Row, base: number): Load {
     trucks: r.trucks_needed,
     pickup: [offsetOf(r.pickup_from, r.pickup_from_offset, base), offsetOf(r.pickup_to, r.pickup_to_offset, base)],
     deliveryBy: offsetOf(r.deliver_by, r.deliver_by_offset, base),
-    budget: [r.budget_min_usd ?? 0, r.budget_max_usd ?? 0],
+    budget: r.budget_min_usd != null && r.budget_max_usd != null ? [r.budget_min_usd, r.budget_max_usd] : null,
     temp: r.temp_min_c != null && r.temp_max_c != null ? [Number(r.temp_min_c), Number(r.temp_max_c)] : undefined,
     hazmat: r.hazmat_class ?? undefined,
     reqs: (r.requirements ?? []) as Feature[],
@@ -78,7 +78,7 @@ function mapTruck(r: Row, base: number): Truck {
     availIn: Math.max(0, offsetOf(r.available_from, r.available_offset, base)),
     routes: (r.corridors ?? []) as Corridor[],
     features: (r.features ?? []) as Feature[],
-    rate: [Number(r.rate_min_usd_per_km ?? 0), Number(r.rate_max_usd_per_km ?? 0)],
+    rate: r.rate_min_usd_per_km != null && r.rate_max_usd_per_km != null ? [Number(r.rate_min_usd_per_km), Number(r.rate_max_usd_per_km)] : null,
     postedHoursAgo: hoursAgo(r),
     isSample: !!r.is_sample,
     priv: p ? { company: p.company_name, contact: contact(p), baseAddress: p.base_address ?? "" } : undefined,
@@ -87,32 +87,34 @@ function mapTruck(r: Row, base: number): Truck {
 
 const STAFF_ROLES = ["super_admin", "ceo", "operations_manager", "verification_officer", "finance_officer", "marketing_officer", "support_officer"];
 
-async function tierFor(supabase: Awaited<ReturnType<typeof createClient>>, userId: string): Promise<Tier> {
+async function tierFor(supabase: Awaited<ReturnType<typeof createClient>>, userId: string): Promise<{ tier: Tier; role: string | null }> {
   const [profile, owner, members] = await Promise.all([
     supabase.from("profiles").select("role,status").eq("id", userId).maybeSingle(),
     supabase.from("cargo_owners").select("verification_status").eq("profile_id", userId).maybeSingle(),
     supabase.from("company_members").select("transporter_companies(verification_status)").eq("profile_id", userId),
   ]);
-  if (profile.data && STAFF_ROLES.includes(profile.data.role) && profile.data.status !== "suspended") return "verified";
-  if (owner.data?.verification_status === "verified") return "verified";
+  const role: string | null = profile.data?.role ?? null;
+  if (profile.data && STAFF_ROLES.includes(profile.data.role) && profile.data.status !== "suspended") return { tier: "verified", role };
+  if (owner.data?.verification_status === "verified") return { tier: "verified", role };
   const companies = (members.data ?? []).map((m: Row) => one(m.transporter_companies)).filter(Boolean) as Row[];
-  if (companies.some((c) => c.verification_status === "verified")) return "verified";
-  return "registered";
+  if (companies.some((c) => c.verification_status === "verified")) return { tier: "verified", role };
+  return { tier: "registered", role };
 }
 
-export async function getMarketplace(): Promise<{ listings: Listing[]; tier: Tier; base: number }> {
+export async function getMarketplace(): Promise<{ listings: Listing[]; tier: Tier; base: number; role: string | null }> {
   const now = new Date();
   const base = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
   // Local preview only (never in production): MARKETPLACE_DEV_TIER=registered|verified lets you see each view without an account.
   const dev = process.env.NODE_ENV === "development" ? process.env.MARKETPLACE_DEV_TIER : undefined;
   const devTier: Tier = dev === "verified" || dev === "registered" ? dev : "guest";
-  const fallback = { listings: sampleListings(devTier), tier: devTier, base };
+  const fallback = { listings: sampleListings(devTier), tier: devTier, base, role: null as string | null };
   if (!authConfigured()) return fallback;
 
   try {
     const supabase = await createClient();
     const { data: auth } = await supabase.auth.getUser();
-    const tier: Tier = auth.user ? await tierFor(supabase, auth.user.id) : "guest";
+    const who = auth.user ? await tierFor(supabase, auth.user.id) : { tier: "guest" as Tier, role: null };
+    const tier = who.tier;
 
     const [loads, trucks] = await Promise.all([
       supabase.from("cargo_requests").select(`${LOAD_COLS},cargo_request_private(company_name,contact_name,contact_phone,contact_email,pickup_address,delivery_address)`).eq("status", "published"),
@@ -123,7 +125,7 @@ export async function getMarketplace(): Promise<{ listings: Listing[]; tier: Tie
     const listings: Listing[] = [...(loads.data ?? []).map((r: Row) => mapLoad(r, base)), ...(trucks.data ?? []).map((r: Row) => mapTruck(r, base))];
     if (!listings.length) return { ...fallback, tier: "guest" };
     listings.sort((a, b) => a.postedHoursAgo - b.postedHoursAgo);
-    return { listings, tier, base };
+    return { listings, tier, base, role: who.role };
   } catch {
     return fallback;
   }

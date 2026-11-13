@@ -193,9 +193,9 @@ function LoadBody({ l, d, locale, base, tier, links, listings, onSelect }: BodyP
         <div className="flex flex-wrap items-end justify-between gap-3 rounded-2xl bg-goldsoft px-4 py-3.5">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">{d.detail.budget}</p>
-            <p className="text-2xl font-extrabold">USD {usd(l.budget[0])} – {usd(l.budget[1])}</p>
+            <p className="text-2xl font-extrabold">{l.budget ? `USD ${usd(l.budget[0])} – ${usd(l.budget[1])}` : d.status.open}</p>
           </div>
-          <p className="text-sm font-medium text-muted">{d.detail.perTruck}</p>
+          {l.budget && <p className="text-sm font-medium text-muted">{d.detail.perTruck}</p>}
         </div>
         <Grid>
           <Row k={d.detail.terms} wide><span className="font-medium">{d.detail.termsValue}</span></Row>
@@ -279,9 +279,9 @@ function TruckBody({ t, d, locale, base, tier, links, listings, onSelect }: Body
         <div className="flex flex-wrap items-end justify-between gap-3 rounded-2xl bg-goldsoft px-4 py-3.5">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">{d.detail.rate}</p>
-            <p className="text-2xl font-extrabold">USD {t.rate[0].toFixed(1)} – {t.rate[1].toFixed(1)}</p>
+            <p className="text-2xl font-extrabold">{t.rate ? `USD ${t.rate[0].toFixed(1)} – ${t.rate[1].toFixed(1)}` : d.card.onRequest}</p>
           </div>
-          <p className="text-sm font-medium text-muted">{d.detail.perKm}</p>
+          {t.rate && <p className="text-sm font-medium text-muted">{d.detail.perKm}</p>}
         </div>
         <Grid>
           <Row k={d.detail.terms} wide><span className="font-medium">{d.detail.termsValue}</span></Row>
@@ -301,7 +301,7 @@ function TruckBody({ t, d, locale, base, tier, links, listings, onSelect }: Body
                   <span className="min-w-0 flex-1">
                     <span className="block font-bold">{l.origin.city} → {l.destination.city}</span>
                     <span className="block text-sm text-muted">{l.commodity[locale]} · {tonnes(perTruckT(l))} · {dateRange(fmt, base, l.pickup)}</span>
-                    <span className="mt-0.5 block text-xs font-semibold text-muted">USD {usd(l.budget[0])} – {usd(l.budget[1])} · {l.ref}</span>
+                    <span className="mt-0.5 block text-xs font-semibold text-muted">{l.budget ? `USD ${usd(l.budget[0])} – ${usd(l.budget[1])}` : d.status.open} · {l.ref}</span>
                   </span>
                   <IconArrow className="h-5 w-5 flex-none text-muted" />
                 </button>

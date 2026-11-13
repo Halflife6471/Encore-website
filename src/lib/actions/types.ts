@@ -10,4 +10,6 @@ export type ActionState = {
   /** Extra data for success screens. */
   email?: string;
   reference?: string;
+  /** Extra identifiers for success screens (e.g. the new truck id, so documents can be attached). */
+  extra?: Record<string, string>;
 };

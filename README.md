@@ -21,6 +21,12 @@ Implements **ENCORE-SRD-WEB-001** (`docs/Encore-Public-Website-SRD.pdf`), derive
 - Data is **illustrative only** (`src/lib/marketplace.ts`, clearly labelled "Sample"); shapes mirror the future `cargo_requests` / `trucks` tables so real rows can replace it in Step 2.
 - Contact details and quoting are sign-in gated; commercial margins are never shown (SRD WEB-013).
 
+### Step 2 — listing forms (in progress)
+- **Post cargo** (`/en/app/post-load`, cargo owners) and **Register a truck** (`/en/app/register-truck`, transporters): guided multi-step forms. The route, border crossings, road distance and transit time are derived from the chosen places (`src/lib/places.ts`); vehicle and requirement suggestions come from `src/lib/listing-rules.ts`; every rule is also enforced on the server (`src/lib/listing-validation.ts`).
+- Customers can only submit for review (`pending_review`); **only staff can publish** (enforced by row-level security). Private details (company, contacts, plates, addresses) go to the `*_private` tables.
+- Truck documents upload to the private `truck-documents` storage bucket straight from the browser (RLS: company members only).
+- Customers see their listings and statuses on `/en/app` and can withdraw them. The staff review queue comes with the Super Admin workspace.
+
 ### Next steps
 - Step 2: company profile + truck registration + private document upload (transporter), cargo-owner profile and cargo requests.
 - Step 3: staff verification queue, quotations, bookings, central invoicing and settlement.

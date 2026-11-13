@@ -69,3 +69,6 @@ export function switchLocalePath(pathname: string, search: string, to: Locale): 
   }
   return target + (search || "");
 }
+
+/** Pages inside the signed-in account area, e.g. appPath("en", "post-load"). Sub-paths are not translated. */
+export const appPath = (locale: Locale, sub: string) => `${href(locale, "app")}/${sub}`;
