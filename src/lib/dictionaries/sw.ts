@@ -710,6 +710,13 @@ export const sw: Dict = {
     accountability: "Teknolojia iongeze uaminifu, isichukue nafasi ya uwajibikaji.",
     whereTitle: "Tunapofanya kazi",
     where: "Tanzania, Zambia na Jamhuri ya Kidemokrasia ya Kongo kwa sasa. Malawi, Rwanda na Burundi zimepangwa.",
+    explore: {
+      eyebrow: "Gundua Encore",
+      services: "Huduma Zetu",
+      servicesText: "Kuanzia soko la kidijitali hadi forodha, ghala, uwasilishaji na usafirishaji wa mnyororo baridi.",
+      team: "Timu Yetu",
+      teamText: "Watu wanaoongoza Encore na jinsi kampuni ilivyopangwa.",
+    },
     who: {
       eyebrow: "Sisi ni nani",
       title: "Kampuni ya usafirishaji na usimamizi wa mizigo kutoka mwanzo hadi mwisho",

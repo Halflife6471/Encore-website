@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Legal, Projects, Services, Team, WhoWeAre } from "@/components/about/AboutSections";
+import { ExploreMore, Legal, WhoWeAre } from "@/components/about/AboutSections";
 import { FinalCta } from "@/components/home-sections";
 import { PartnersMarquee } from "@/components/PartnersMarquee";
 import { InfoCard, PageHero, Section, SectionHead } from "@/components/ui";
@@ -24,7 +24,6 @@ export default async function About({ params }: P) {
     <>
       <PageHero title={a.title} lead={a.lead} />
       <WhoWeAre d={d} />
-      <Services locale={locale} d={d} />
       <Section>
         <div className="grid gap-6 md:grid-cols-2">
           <InfoCard title={a.vision.t} dark>{a.vision.d}</InfoCard>
@@ -42,12 +41,11 @@ export default async function About({ params }: P) {
         </div>
         <p className="mt-10 text-2xl font-semibold italic">“{a.accountability}”</p>
       </Section>
-      <Team d={d} />
-      <Projects d={d} />
       <Legal d={d} />
       <Section tint>
         <SectionHead title={a.whereTitle} lead={a.where} />
       </Section>
+      <ExploreMore locale={locale} d={d} />
       <PartnersMarquee eyebrow={d.home.partners.eyebrow} title={d.home.partners.title} />
       <FinalCta locale={locale} d={d} />
     </>

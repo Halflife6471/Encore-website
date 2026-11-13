@@ -7,6 +7,8 @@ import { LOCALES, type Locale } from "./i18n-config";
 export const routeSlugs = {
   home: { en: "", sw: "" },
   about: { en: "about", sw: "kuhusu" },
+  services: { en: "services", sw: "huduma-zetu" },
+  team: { en: "team", sw: "timu-yetu" },
   howItWorks: { en: "how-it-works", sw: "jinsi-inavyofanya-kazi" },
   cargoOwners: { en: "cargo-owners", sw: "wenye-mizigo" },
   transporters: { en: "transporters", sw: "wasafirishaji" },

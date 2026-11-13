@@ -4,7 +4,7 @@ import { href, type RouteKey } from "@/lib/routes";
 import { SITE_URL } from "@/lib/site";
 
 // Public, indexable pages only (the 14 pages of SRS §7.1 minus private/utility screens).
-const PUBLIC: RouteKey[] = ["home", "about", "howItWorks", "cargoOwners", "transporters", "drivers", "corridors", "marketplace", "partners", "contact", "faq", "privacy", "terms", "login", "register"];
+const PUBLIC: RouteKey[] = ["home", "about", "services", "team", "howItWorks", "cargoOwners", "transporters", "drivers", "corridors", "marketplace", "partners", "contact", "faq", "privacy", "terms", "login", "register"];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return PUBLIC.flatMap((key) =>

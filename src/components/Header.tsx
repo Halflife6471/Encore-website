@@ -57,7 +57,7 @@ export function Header({ locale, nav }: { locale: Locale; nav: Dict["nav"] }) {
   const phone = CONTACT.phone;
   const tel = phone ? `tel:${phone.replace(/\s/g, "")}` : undefined;
   const pill = (on: boolean) =>
-    `flex items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-2.5 text-[15px] font-medium transition ${on ? "bg-surface text-fg shadow-[0_1px_4px_rgba(29,29,27,.12)]" : "text-muted hover:bg-surface/70 hover:text-fg"}`;
+    `flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-2.5 text-[15px] font-medium transition ${on ? "bg-surface text-fg shadow-[0_1px_4px_rgba(29,29,27,.12)]" : "text-muted hover:bg-surface/70 hover:text-fg"}`;
 
   const menuLinks: { key: RouteKey; label: string; to?: string }[] = [
     { key: "marketplace", label: nav.marketplace },
@@ -68,8 +68,8 @@ export function Header({ locale, nav }: { locale: Locale; nav: Dict["nav"] }) {
     { key: "corridors", label: nav.corridors },
     { key: "partners", label: nav.partners },
     { key: "about", label: nav.about },
-    { key: "about", label: nav.ourServices, to: `${href(locale, "about")}#services` },
-    { key: "about", label: nav.ourTeam, to: `${href(locale, "about")}#team` },
+    { key: "services", label: nav.ourServices },
+    { key: "team", label: nav.ourTeam },
     { key: "contact", label: nav.contact },
   ];
 
@@ -104,22 +104,24 @@ export function Header({ locale, nav }: { locale: Locale; nav: Dict["nav"] }) {
             <Link href={href(locale, "marketplace")} className={pill(active("marketplace"))}>{nav.marketplace}</Link>
             <Link href={href(locale, "corridors")} className={pill(active("corridors"))}>{nav.corridors}</Link>
             <Link href={href(locale, "partners")} className={pill(active("partners"))}>{nav.partners}</Link>
-            {/* Very wide screens: the three links sit directly in the bar. */}
-            <div className="hidden min-[1920px]:contents">
+            {/* Wide screens: About Us, Our Services and Our Team are separate items, each opening its own page. */}
+            <div className="hidden min-[1536px]:contents">
               <Link href={href(locale, "about")} className={pill(active("about"))}>{nav.about}</Link>
-              <Link href={`${href(locale, "about")}#services`} className={pill(false)}>{nav.ourServices}</Link>
-              <Link href={`${href(locale, "about")}#team`} className={pill(false)}>{nav.ourTeam}</Link>
+              <Link href={href(locale, "services")} className={pill(active("services"))}>{nav.ourServices}</Link>
+              <Link href={href(locale, "team")} className={pill(active("team"))}>{nav.ourTeam}</Link>
             </div>
-            {/* Laptops: "About" opens a small menu, so the bar never overflows. */}
-            <div className="group relative min-[1920px]:hidden">
-              <Link href={href(locale, "about")} className={pill(active("about"))}>
+            {/* Small laptops: no room for three more items, so they share one menu (still three separate pages). */}
+            <div className="group relative min-[1536px]:hidden">
+              <Link href={href(locale, "about")} className={pill(active("about") || active("services") || active("team"))}>
                 {nav.about} <IconChevron className="h-3.5 w-3.5" />
               </Link>
               <div className="invisible absolute left-0 top-full z-50 pt-2 opacity-0 transition group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
                 <div role="menu" className="min-w-56 rounded-2xl border border-line bg-surface p-2 shadow-lift">
-                  <Link role="menuitem" href={href(locale, "about")} className={`block rounded-xl px-4 py-2.5 text-[15px] font-medium hover:bg-soft ${active("about") ? "bg-goldsoft" : ""}`}>{nav.about}</Link>
-                  <Link role="menuitem" href={`${href(locale, "about")}#services`} className="block rounded-xl px-4 py-2.5 text-[15px] font-medium hover:bg-soft">{nav.ourServices}</Link>
-                  <Link role="menuitem" href={`${href(locale, "about")}#team`} className="block rounded-xl px-4 py-2.5 text-[15px] font-medium hover:bg-soft">{nav.ourTeam}</Link>
+                  {(["about", "services", "team"] as const).map((k) => (
+                    <Link key={k} role="menuitem" href={href(locale, k)} className={`block rounded-xl px-4 py-2.5 text-[15px] font-medium hover:bg-soft ${active(k) ? "bg-goldsoft" : ""}`}>
+                      {k === "about" ? nav.about : k === "services" ? nav.ourServices : nav.ourTeam}
+                    </Link>
+                  ))}
                 </div>
               </div>
             </div>
@@ -132,10 +134,10 @@ export function Header({ locale, nav }: { locale: Locale; nav: Dict["nav"] }) {
             <LanguageSwitch locale={locale} label={nav.language} />
             {phone && (
               <>
-                <a href={tel} aria-label={`${nav.support}: ${phone}`} title={phone} className="hidden h-11 w-11 place-items-center rounded-full bg-goldsoft transition hover:bg-gold min-[1440px]:grid min-[1700px]:hidden">
+                <a href={tel} aria-label={`${nav.support}: ${phone}`} title={phone} className="hidden h-11 w-11 place-items-center rounded-full bg-goldsoft transition hover:bg-gold min-[1440px]:grid min-[1900px]:hidden">
                   <IconPhone className="h-5 w-5" />
                 </a>
-                <a href={tel} className="hidden items-center gap-3 min-[1700px]:flex">
+                <a href={tel} className="hidden items-center gap-3 min-[1900px]:flex">
                   <span className="grid h-11 w-11 place-items-center rounded-full bg-goldsoft"><IconPhone className="h-5 w-5" /></span>
                   <span className="leading-tight">
                     <span className="block text-[11px] font-medium uppercase tracking-[0.18em] text-muted">{nav.support}</span>

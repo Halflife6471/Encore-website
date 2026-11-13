@@ -19,7 +19,7 @@ export const en = {
     corridors: "Corridors",
     marketplace: "Marketplace",
     partners: "Partners",
-    about: "About",
+    about: "About Us",
     contact: "Contact",
     ourServices: "Our Services",
     ourTeam: "Our Team",
@@ -711,6 +711,13 @@ export const en = {
     accountability: "Automation should increase trust, not replace accountability.",
     whereTitle: "Where we operate",
     where: "Tanzania, Zambia and the Democratic Republic of Congo today. Malawi, Rwanda and Burundi are planned.",
+    explore: {
+      eyebrow: "Explore Encore",
+      services: "Our Services",
+      servicesText: "From the digital marketplace to customs, warehousing, delivery and cold chain freight.",
+      team: "Our Team",
+      teamText: "The people leading Encore and how the company is organised.",
+    },
     who: {
       eyebrow: "Who we are",
       title: "An end-to-end logistics and freight management company",

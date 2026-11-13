@@ -26,7 +26,7 @@ const PROJECT_PHOTOS = [
 export function WhoWeAre({ d }: { d: Dict }) {
   const w = d.about.who;
   return (
-    <Section>
+    <Section tint>
       <div className="grid gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-14">
         <div>
           <SectionHead eyebrow={w.eyebrow} title={w.title} lead={w.text} />
@@ -57,7 +57,7 @@ export function WhoWeAre({ d }: { d: Dict }) {
 }
 
 /* ---------------------------------------------------------------- Services */
-export function Services({ locale, d }: { locale: Locale; d: Dict }) {
+export function Services({ locale, d, bare = false }: { locale: Locale; d: Dict; bare?: boolean }) {
   const s = d.about.services;
   const m = s.marketplace;
   const audienceIcons = [IconBox, IconTruck, IconBriefcase];
@@ -65,8 +65,8 @@ export function Services({ locale, d }: { locale: Locale; d: Dict }) {
   const itemIcons = [IconClipboard, IconWarehouse, IconTruck, IconSnow];
 
   return (
-    <Section tint id="services" className="scroll-mt-20">
-      <SectionHead eyebrow={s.eyebrow} title={s.title} lead={s.lead} />
+    <Section tint={!bare} id="services" className="scroll-mt-20">
+      {!bare && <SectionHead eyebrow={s.eyebrow} title={s.title} lead={s.lead} />}
 
       {/* Service number one: the marketplace that joins everyone in the freight chain */}
       <div className="relative overflow-hidden rounded-[2rem] bg-ink p-7 text-white sm:p-10">
@@ -122,11 +122,11 @@ export function Services({ locale, d }: { locale: Locale; d: Dict }) {
 }
 
 /* -------------------------------------------------------------------- Team */
-export function Team({ d }: { d: Dict }) {
+export function Team({ d, bare = false }: { d: Dict; bare?: boolean }) {
   const t = d.about.team;
   return (
     <Section id="team" className="scroll-mt-20">
-      <SectionHead eyebrow={t.eyebrow} title={t.title} lead={t.lead} />
+      {!bare && <SectionHead eyebrow={t.eyebrow} title={t.title} lead={t.lead} />}
       <ul className="grid gap-6 md:grid-cols-3">
         {t.members.map((m, i) => (
           <li key={m.name} className="group overflow-hidden rounded-[2rem] border border-line bg-surface shadow-soft transition hover:-translate-y-1 hover:shadow-lift">
@@ -220,6 +220,33 @@ export function Legal({ d }: { d: Dict }) {
           labels={{ issuedBy: l.issuedBy, enlarge: l.enlarge, close: l.close, prev: l.prev, next: l.next }}
         />
       </div>
+    </Section>
+  );
+}
+
+/* --------------------------------------------- links from About to the new pages */
+export function ExploreMore({ locale, d }: { locale: Locale; d: Dict }) {
+  const e = d.about.explore;
+  const cards = [
+    { to: href(locale, "services"), t: e.services, text: e.servicesText },
+    { to: href(locale, "team"), t: e.team, text: e.teamText },
+  ];
+  return (
+    <Section>
+      <p className="eyebrow mb-5">{e.eyebrow}</p>
+      <ul className="grid gap-5 md:grid-cols-2">
+        {cards.map((c) => (
+          <li key={c.to}>
+            <Link href={c.to} className="card group flex h-full items-center justify-between gap-6 transition hover:-translate-y-1 hover:shadow-lift">
+              <span>
+                <span className="block text-2xl font-bold">{c.t}</span>
+                <span className="mt-2 block text-muted">{c.text}</span>
+              </span>
+              <span className="grid h-12 w-12 flex-none place-items-center rounded-full bg-gold text-ongold transition group-hover:translate-x-1"><IconArrow className="h-5 w-5" /></span>
+            </Link>
+          </li>
+        ))}
+      </ul>
     </Section>
   );
 }
