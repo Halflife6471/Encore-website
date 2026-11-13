@@ -44,10 +44,10 @@ export function Header({ locale, nav }: { locale: Locale; nav: Dict["nav"] }) {
     };
   }, [open]);
 
-  const active = (key: RouteKey) => {
-    const slug = routeSlugs[key][locale];
-    return !!slug && (pathname === `/${locale}/${slug}` || pathname.startsWith(`/${locale}/${slug}/`));
-  };
+  // The server sees the canonical (English) path after the Swahili slug is rewritten, the browser sees the Swahili one:
+  // matching both keeps the highlighted menu item identical on both sides (no hydration mismatch).
+  const active = (key: RouteKey) =>
+    [routeSlugs[key][locale], routeSlugs[key].en].some((slug) => !!slug && (pathname === `/${locale}/${slug}` || pathname.startsWith(`/${locale}/${slug}/`)));
   const solutions: { key: RouteKey; label: string }[] = [
     { key: "cargoOwners", label: nav.cargoOwners },
     { key: "transporters", label: nav.transporters },
